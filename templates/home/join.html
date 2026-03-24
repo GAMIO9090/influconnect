@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join as Influencer – InfluConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:       #f97316;
+      --orange-dark:  #ea580c;
+      --orange-light: #fff7ed;
+      --orange-mid:   #fed7aa;
+      --violet:       #7c3aed;
+      --violet-light: #ede9fe;
+      --violet-mid:   #c4b5fd;
+      --ink:          #1a1714;
+      --ink-soft:     #4b4743;
+      --muted:        #8a847d;
+      --line:         #e8e4df;
+      --surface:      #faf8f5;
+      --white:        #ffffff;
+      --success:      #22c55e;
+      --radius-sm:    10px;
+      --radius-md:    16px;
+      --radius-lg:    22px;
+      --shadow-sm:    0 2px 10px rgba(0,0,0,0.06);
+      --shadow-card:  0 4px 28px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      --shadow-hover: 0 20px 48px -8px rgba(124,58,237,0.18), 0 8px 22px rgba(0,0,0,0.07);
+      --font-display: 'Syne', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--surface);
+      color: var(--ink);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes blobMove {
+      0%, 100% { transform: scale(1) translate(0,0); }
+      50%       { transform: scale(1.07) translate(10px,-14px); }
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.5); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes successPop {
+      0%   { opacity: 0; transform: scale(0.88) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .anim-nav { animation: slideDown 0.5s ease both; }
+    .anim-1   { animation: fadeUp 0.55s ease both 0.08s; }
+    .anim-2   { animation: fadeUp 0.55s ease both 0.18s; }
+    .anim-3   { animation: fadeUp 0.55s ease both 0.28s; }
+    .anim-4   { animation: fadeUp 0.55s ease both 0.38s; }
+
+    /* ══════════ NAVBAR ══════════ */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,248,245,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
+      height: 64px;
+      display: flex; align-items: center;
+      padding: 0 clamp(16px,5vw,56px);
+    }
+    .navbar-inner {
+      width: 100%; max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .logo-mark {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(145deg, #fb923c, #ea580c);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 10px rgba(249,115,22,0.38);
+      transition: transform 0.25s; flex-shrink: 0;
+    }
+    .logo:hover .logo-mark { transform: rotate(-6deg) scale(1.1); }
+    .logo-text {
+      font-family: var(--font-display);
+      font-size: 1.18rem; font-weight: 700;
+      letter-spacing: -0.02em; line-height: 1;
+    }
+    .logo-text .dark   { color: var(--ink); }
+    .logo-text .accent { color: var(--orange); }
+
+    .nav-links { display: flex; align-items: center; gap: 26px; list-style: none; }
+    .nav-links a {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--ink-soft); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a.active { color: var(--orange); border-bottom: 1.5px solid var(--orange); padding-bottom: 1px; }
+
+    .btn-nav {
+      font-family: var(--font-display);
+      font-size: 0.85rem; font-weight: 600;
+      background: linear-gradient(135deg, #fb923c, #ea580c);
+      color: var(--white); border: none;
+      padding: 9px 22px; border-radius: 999px;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 3px 12px rgba(249,115,22,0.3);
+      transition: transform 0.18s, box-shadow 0.18s;
+      white-space: nowrap; display: inline-block;
+    }
+    .btn-nav:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249,115,22,0.4); }
+
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 6px;
+      border-radius: 8px; transition: background 0.2s;
+    }
+    .hamburger:hover { background: var(--orange-light); }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--ink-soft); border-radius: 2px; }
+
+    .mobile-menu {
+      display: none; flex-direction: column;
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+    }
+    .mobile-menu.open { display: flex; animation: slideDown 0.3s ease; }
+    .mobile-menu a {
+      font-size: 0.9rem; font-weight: 500;
+      color: var(--ink-soft); text-decoration: none;
+      padding: 12px 20px; border-bottom: 1px solid var(--line);
+      transition: color 0.2s, background 0.2s;
+    }
+    .mobile-menu a:hover  { color: var(--orange); background: var(--orange-light); }
+    .mobile-menu a.active { color: var(--orange); }
+    .mobile-menu .btn-nav { margin: 12px 20px 16px; text-align: center; border-radius: 10px; }
+
+    /* ══════════ HERO ══════════ */
+    .hero {
+      position: relative; overflow: hidden;
+      padding: clamp(44px,7vw,72px) clamp(16px,5vw,40px) clamp(28px,4vw,44px);
+      text-align: center;
+    }
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+      animation: blobMove 9s ease-in-out infinite;
+    }
+    .blob-1 { width: 380px; height: 380px; background: rgba(124,58,237,0.10); top: -120px; right: -60px; }
+    .blob-2 { width: 280px; height: 280px; background: rgba(249,115,22,0.12); top: 0; left: -80px; animation-delay: -4s; }
+    .blob-3 { width: 200px; height: 200px; background: rgba(196,181,253,0.15); bottom: -40px; left: 40%; animation-delay: -7s; }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--violet-light); border: 1px solid var(--violet-mid);
+      border-radius: 999px; padding: 5px 15px;
+      font-size: 0.78rem; font-weight: 500;
+      color: var(--violet); letter-spacing: 0.02em; margin-bottom: 18px;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--violet); display: inline-block;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem,5vw,3.1rem);
+      font-weight: 800; line-height: 1.08;
+      letter-spacing: -0.03em; color: var(--ink); margin-bottom: 14px;
+    }
+    .hero-title .hl {
+      background: linear-gradient(135deg, #7c3aed, #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(0.92rem,2vw,1.05rem);
+      color: var(--muted); max-width: 440px; margin: 0 auto;
+    }
+
+    /* ══════════ STEPS STRIP ══════════ */
+    .steps-strip {
+      max-width: 680px; margin: 0 auto;
+      padding: 0 clamp(16px,5vw,40px) clamp(28px,4vw,44px);
+    }
+    .steps-inner {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; background: var(--white);
+      border: 1px solid var(--line); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .step {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      padding: 16px 10px; position: relative;
+    }
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+      width: 1px; height: 60%; background: var(--line);
+    }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--violet-light); color: var(--violet);
+      font-family: var(--font-display); font-size: 0.78rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 5px;
+    }
+    .step.done .step-num { background: var(--violet); color: var(--white); }
+    .step-label { font-size: 0.72rem; font-weight: 500; color: var(--muted); text-align: center; }
+    .step.done .step-label { color: var(--violet); font-weight: 600; }
+
+    /* ══════════ FORM CARD ══════════ */
+    .form-section {
+      padding: 0 clamp(16px,5vw,40px) clamp(40px,8vw,72px);
+      max-width: 760px; margin: 0 auto;
+    }
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    /* Card header bar */
+    .card-header {
+      background: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #f97316 100%);
+      padding: 28px 36px 24px;
+      position: relative; overflow: hidden;
+    }
+    .card-header::before {
+      content: ''; position: absolute;
+      width: 260px; height: 260px; border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      top: -80px; right: -60px;
+    }
+    .card-header::after {
+      content: ''; position: absolute;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      bottom: -50px; left: 30px;
+    }
+    .card-header-inner { position: relative; z-index: 1; }
+    .card-header h2 {
+      font-family: var(--font-display);
+      font-size: 1.35rem; font-weight: 700;
+      color: var(--white); letter-spacing: -0.02em; margin-bottom: 4px;
+    }
+    .card-header p { font-size: 0.82rem; color: rgba(255,255,255,0.75); }
+
+    /* Card body */
+    .card-body { padding: clamp(24px,4vw,40px) clamp(20px,4vw,40px); }
+
+    /* ── Section headings inside form ── */
+    .form-section-title {
+      font-family: var(--font-display);
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 16px; margin-top: 28px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .form-section-title:first-child { margin-top: 0; }
+    .form-section-title::after {
+      content: ''; flex: 1; height: 1px; background: var(--line);
+    }
+
+    /* ── Grid ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    /* ── Field ── */
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--ink); letter-spacing: 0.01em;
+    }
+    .form-label .req { color: var(--orange); margin-left: 2px; }
+
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-icon {
+      position: absolute; left: 13px; pointer-events: none;
+      color: #c2bdb7; display: flex; z-index: 1;
+      transition: color 0.2s;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 0.875rem; color: var(--ink);
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="url"] {
+      padding: 11px 14px 11px 40px;
+      height: 46px;
+    }
+    select {
+      padding: 11px 36px 11px 40px;
+      height: 46px;
+      -webkit-appearance: none; appearance: none; cursor: pointer;
+    }
+    textarea {
+      padding: 12px 14px 12px 40px;
+      resize: vertical; min-height: 100px;
+    }
+    input::placeholder, textarea::placeholder { color: #c2bdb7; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--violet);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+    }
+    .input-wrap:focus-within .input-icon { color: var(--violet); }
+
+    /* Select caret */
+    .select-caret {
+      position: absolute; right: 12px; pointer-events: none;
+      color: var(--muted);
+    }
+
+    /* ── Upload Area ── */
+    .upload-area {
+      border: 2px dashed var(--line);
+      border-radius: var(--radius-md);
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: var(--surface);
+      position: relative;
+    }
+    .upload-area:hover {
+      border-color: var(--violet-mid);
+      background: var(--violet-light);
+    }
+    .upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+      width: 100%; height: 100%; border: none; background: none; box-shadow: none;
+      padding: 0;
+    }
+    .upload-area input[type="file"]:focus { box-shadow: none; border: none; }
+    .upload-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--violet-light);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px; color: var(--violet);
+    }
+    .upload-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 4px;
+    }
+    .upload-sub { font-size: 0.75rem; color: var(--muted); }
+    .upload-sub span {
+      font-weight: 600; color: var(--violet);
+    }
+    .upload-formats {
+      display: inline-flex; gap: 6px; margin-top: 10px;
+    }
+    .fmt-badge {
+      font-size: 0.65rem; font-weight: 600;
+      padding: 2px 8px; border-radius: 999px;
+      background: var(--white); color: var(--muted);
+      border: 1px solid var(--line);
+    }
+
+    /* ── Approval note ── */
+    .approval-note {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--orange-light);
+      border: 1px solid var(--orange-mid);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px; margin-top: 24px;
+    }
+    .approval-icon { flex-shrink: 0; color: var(--orange); }
+    .approval-note p {
+      font-size: 0.78rem; color: var(--orange-dark); line-height: 1.5;
+    }
+    .approval-note strong { font-weight: 600; }
+
+    /* ── Buttons ── */
+    .form-actions {
+      display: flex; gap: 12px; margin-top: 28px;
+    }
+    .btn-submit {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: 0.95rem; font-weight: 600;
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      color: var(--white); border: none;
+      padding: 14px 24px; border-radius: var(--radius-sm);
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(124,58,237,0.42); }
+    .btn-submit:active { transform: translateY(0); box-shadow: none; }
+
+    .btn-reset {
+      font-family: var(--font-display);
+      font-size: 0.875rem; font-weight: 600;
+      padding: 14px 22px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--line);
+      color: var(--ink-soft); background: none;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      display: flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .btn-reset:hover { border-color: #d1d5db; color: var(--ink); background: var(--surface); }
+
+    /* Spinner inside submit */
+    .spinner {
+      display: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      animation: spin 0.75s linear infinite;
+    }
+
+    /* ── Success State ── */
+    .success-card {
+      display: none;
+      text-align: center;
+      padding: clamp(40px,6vw,64px) clamp(20px,5vw,48px);
+      animation: successPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .success-checkmark {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 22px;
+      box-shadow: 0 8px 28px rgba(124,58,237,0.35);
+    }
+    .success-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--ink); letter-spacing: -0.02em; margin-bottom: 8px;
+    }
+    .success-card p { font-size: 0.9rem; color: var(--muted); max-width: 360px; margin: 0 auto 24px; }
+    .success-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .success-pill {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; font-weight: 500;
+      padding: 6px 14px; border-radius: 999px;
+      background: var(--violet-light); color: var(--violet);
+      border: 1px solid var(--violet-mid);
+    }
+
+    /* ── Trust row ── */
+    .trust-row {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 18px;
+      margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line);
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; color: var(--muted);
+    }
+    .trust-item svg { flex-shrink: 0; }
+
+    /* ══════════ CTA BAND ══════════ */
+    .cta-band {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      padding: clamp(40px,7vw,64px) clamp(16px,5vw,40px);
+      text-align: center;
+    }
+    .cta-eyebrow {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.7); margin-bottom: 10px;
+    }
+    .cta-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem,4vw,2.5rem);
+      font-weight: 800; color: var(--white);
+      line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 10px;
+    }
+    .cta-sub {
+      font-size: 0.9rem; color: rgba(255,255,255,0.78);
+      max-width: 460px; margin: 0 auto 24px;
+    }
+    .btn-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-display); font-size: 0.9rem; font-weight: 700;
+      background: var(--white); color: var(--violet);
+      padding: 13px 30px; border-radius: 999px; text-decoration: none;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(0,0,0,0.2); }
+
+    /* ══════════ FOOTER ══════════ */
+    .footer {
+      background: #1a1714;
+      padding: clamp(24px,4vw,40px) clamp(16px,5vw,40px);
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .footer-logo-mark {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg,#fb923c,#ea580c);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.3);
+    }
+    .footer-logo-text {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 700; letter-spacing: -0.02em;
+    }
+    .footer-logo-text .dark  { color: var(--white); }
+    .footer-logo-text .orange { color: #fb923c; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 20px; list-style: none; }
+    .footer-links a {
+      font-size: 0.78rem; font-weight: 500;
+      color: #a09d99; text-decoration: none; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { font-size: 0.75rem; color: #6b6765; }
+
+    /* ══════════ RESPONSIVE ══════════ */
+    @media (max-width: 720px) {
+      .nav-links, .btn-nav { display: none; }
+      .hamburger { display: flex; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .full { grid-column: 1; }
+      .form-actions { flex-direction: column; }
+      .btn-reset { justify-content: center; }
+      .steps-inner { flex-direction: column; }
+      .step:not(:last-child)::after { display: none; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+    @media (max-width: 440px) {
+      .hero-title { font-size: 1.8rem; }
+      .card-header { padding: 20px 20px 18px; }
+      .card-body { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ NAVBAR ═══════════ -->
+<header>
+  <nav class="navbar anim-nav">
+    <div class="navbar-inner">
+      <a href="#" class="logo">
+        <div class="logo-mark">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M8.5 11.5a3.5 3.5 0 005 0l2-2a3.536 3.536 0 00-5-5L9.4 5.6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11.5 8.5a3.5 3.5 0 00-5 0l-2 2a3.536 3.536 0 005 5l1.1-1.1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="logo-text"><span class="dark">Influ</span><span class="accent">Connect</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Explore Influencers</a></li>
+        <li><a href="#">How it Works</a></li>
+        <li><a href="#">Login</a></li>
+      </ul>
+      <a href="#" class="btn-nav">Get Started</a>
+      <button class="hamburger" onclick="document.getElementById('mob-menu').classList.toggle('open')" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div id="mob-menu" class="mobile-menu">
+    <a href="#">Home</a>
+    <a href="#">Explore Influencers</a>
+    <a href="#">How it Works</a>
+    <a href="#">Login</a>
+    <a href="#" class="btn-nav">Get Started</a>
+  </div>
+</header>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="hero-inner">
+    <div class="hero-badge anim-1"><span class="live-dot"></span>Applications open now</div>
+    <h1 class="hero-title anim-2">Become an <span class="hl">Influencer</span><br/>on InfluConnect</h1>
+    <p class="hero-sub anim-3">Join our platform and start earning by collaborating with local brands near you.</p>
+  </div>
+</section>
+
+<!-- ═══════════ STEPS STRIP ═══════════ -->
+<div class="steps-strip anim-4">
+  <div class="steps-inner">
+    <div class="step done">
+      <div class="step-num">1</div>
+      <div class="step-label">Fill Profile</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-label">Under Review</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-label">Get Approved</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-label">Start Earning</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FORM CARD ═══════════ -->
+<div class="form-section anim-4">
+  <div class="form-card">
+
+    <!-- Header -->
+    <div class="card-header">
+      <div class="card-header-inner">
+        <h2>Create Your Influencer Profile</h2>
+        <p>Fill in your details below — takes less than 3 minutes</p>
+      </div>
+    </div>
+
+    <!-- Body with form OR success -->
+    <div class="card-body">
+
+      <!-- ── SUCCESS STATE (hidden initially) ── -->
+<div class="success-card" id="success-card">
+  <div class="success-checkmark">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 6L9 17l-5-5"/>
+    </svg>
+  </div>
+
+  <h3>Application Submitted! 🎉</h3>
+  <p>Your influencer profile is under review. We'll email you within 24–48 hours once it's approved.</p>
+
+  <div class="success-pills">
+    <span class="success-pill">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
+      Profile Submitted
+    </span>
+
+    <span class="success-pill">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12,6 12,12 16,14"/>
+      </svg>
+      Review in 24–48 hrs
+    </span>
+
+    <span class="success-pill">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+      Email Confirmation Sent
+    </span>
+  </div>
+
+  <!-- ✅ YAHAN BUTTON ADD KIYA -->
+  <div style="margin-top: 20px; text-align: center;">
+    <a href="/influencer-dashboard/" 
+       style="padding: 10px 20px; background: #7c3aed; color: white; border-radius: 8px; text-decoration: none;">
+       Go to Dashboard
+    </a>
+  </div>
+
+</div>
+
+      <!-- ── FORM ── -->
+      <form id="inf-form" novalidate onsubmit="handleSubmit(event)">
+
+        <!-- Personal Info -->
+        <p class="form-section-title">Personal Information</p>
+<div class="form-grid">
+
+  <div class="form-field">
+    <label class="form-label" for="name">Full Name <span class="req">*</span></label>
+    <div class="input-wrap">
+      <span class="input-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </span>
+
+      <!-- ✅ YAHAN CHANGE KIYA -->
+      <input type="text" id="name" name="name" placeholder="Your full name" required autocomplete="name" />
+    
+    </div>
+  </div>
+
+</div>
+
+          <div class="form-field">
+            <label class="form-label" for="email">Email Address <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </span>
+              <input type="email" id="email" placeholder="you@example.com" required autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="phone">Phone Number <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.09 2.2 2 2 0 012.07 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.86-.86a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              </span>
+              <input type="tel" id="phone" placeholder="+91 98765 43210" required autocomplete="tel" />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="city">City <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </span>
+              <input type="text" id="city" placeholder="e.g. Delhi, Mumbai" required />
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Creator Info -->
+        <p class="form-section-title">Creator Details</p>
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label class="form-label" for="niche">Your Niche <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2"/></svg>
+              </span>
+              <select id="niche" required>
+                <option value="" disabled selected>Select your niche</option>
+                <option value="food">🍕 Food & Dining</option>
+                <option value="fashion">👗 Fashion & Style</option>
+                <option value="tech">💻 Tech & Gadgets</option>
+                <option value="fitness">🏋️ Fitness & Health</option>
+                <option value="lifestyle">✨ Lifestyle</option>
+                <option value="travel">✈️ Travel</option>
+                <option value="beauty">💄 Beauty & Skincare</option>
+              </select>
+              <svg class="select-caret" width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="followers">Total Followers <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              </span>
+              <input type="number" id="followers" placeholder="e.g. 25000" min="0" required />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="instagram">Instagram Profile Link <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              </span>
+              <input type="url" id="instagram" placeholder="https://instagram.com/yourhandle" required />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label" for="price">Price per Promotion (₹) <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              </span>
+              <input type="number" id="price" placeholder="e.g. 1500" min="0" required />
+            </div>
+          </div>
+
+          <div class="form-field full">
+            <label class="form-label" for="bio">Short Bio <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon" style="top: 13px; align-items: flex-start;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </span>
+              <textarea id="bio" placeholder="Tell brands about yourself, your content style, and your audience…" required rows="4"></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Upload -->
+        <p class="form-section-title">Profile Photo</p>
+        <div class="upload-area">
+          <input type="file" accept="image/*" aria-label="Upload profile photo" />
+          <div class="upload-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div class="upload-title">Drag & drop your photo here</div>
+          <div class="upload-sub">or <span>browse files</span> from your device</div>
+          <div class="upload-formats">
+            <span class="fmt-badge">JPG</span>
+            <span class="fmt-badge">PNG</span>
+            <span class="fmt-badge">WEBP</span>
+            <span class="fmt-badge">Max 5MB</span>
+          </div>
+        </div>
+
+        <!-- Approval note -->
+        <div class="approval-note">
+          <span class="approval-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </span>
+          <p><strong>Profile Review:</strong> Your profile will be carefully reviewed by our team before it goes live. This usually takes 24–48 hours. You'll receive an email once approved.</p>
+        </div>
+
+       <!-- Actions -->
+<form method="POST">
+  {% csrf_token %}
+
+  <div class="form-actions">
+    <button type="submit" class="btn-submit" id="submit-btn">
+      <div class="spinner" id="spinner"></div>
+      <svg id="submit-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 2L11 13"/>
+        <path d="M22 2L15 22l-4-9-9-4 20-7z"/>
+      </svg>
+      <span id="submit-text">Submit Application</span>
+    </button>
+
+    <button type="reset" class="btn-reset">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="1,4 1,10 7,10"/>
+        <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+      </svg>
+      Reset
+    </button>
+  </div>
+
+</form>
+
+        <!-- Trust -->
+        <div class="trust-row">
+          <div class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="#22c55e"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            SSL Secured
+          </div>
+          <div class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="#60a5fa"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+            Data Privacy Protected
+          </div>
+          <div class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="#a78bfa"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/></svg>
+            1,200+ Creators Joined
+          </div>
+          <div class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="#f97316"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+            Free to Join
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CTA BAND ═══════════ -->
+<section class="cta-band">
+  <p class="cta-eyebrow">For Businesses</p>
+  <h2 class="cta-title">Looking to hire influencers?</h2>
+  <p class="cta-sub">Browse 1,200+ local creators and run campaigns that drive real results for your brand.</p>
+  <a href="#" class="btn-cta">
+    Find Influencers
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <a href="#" class="footer-logo">
+      <div class="footer-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M8.5 11.5a3.5 3.5 0 005 0l2-2a3.536 3.536 0 00-5-5L9.4 5.6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M11.5 8.5a3.5 3.5 0 00-5 0l-2 2a3.536 3.536 0 005 5l1.1-1.1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="footer-logo-text"><span class="dark">Influ</span><span class="orange">Connect</span></span>
+    </a>
+    <ul class="footer-links">
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+      <li><a href="#">Help Center</a></li>
+      <li><a href="#">Contact Us</a></li>
+    </ul>
+    <p class="footer-copy">© 2025 InfluConnect. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  function handleSubmit(e) {
+    e.preventDefault();
+    var btn    = document.getElementById('submit-btn');
+    var spinner = document.getElementById('spinner');
+    var icon   = document.getElementById('submit-icon');
+    var text   = document.getElementById('submit-text');
+
+    // Loading state
+    btn.disabled = true;
+    btn.style.opacity = '0.8';
+    spinner.style.display = 'block';
+    icon.style.display = 'none';
+    text.textContent = 'Submitting…';
+
+    setTimeout(function () {
+      document.getElementById('inf-form').style.display = 'none';
+      document.getElementById('success-card').style.display = 'block';
+      window.scrollTo({ top: document.getElementById('success-card').offsetTop - 80, behavior: 'smooth' });
+    }, 1600);
+  }
+</script>
+
+</body>
+</html>

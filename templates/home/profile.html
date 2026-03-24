@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rahul Sharma — InfluConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --pr: #FF5B2E;
+      --acc: #FF8A65;
+      --dark: #0F0E17;
+      --mid: #1C1A2E;
+      --surf: #211F35;
+      --surf2: #27253C;
+      --bdr: rgba(255,255,255,0.08);
+      --txt: #E8E6F0;
+      --mut: #7B78A0;
+      --mut2: #5A577A;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--txt);min-height:100vh;overflow-x:hidden}
+    h1,h2,h3,h4,.logo{font-family:'Syne',sans-serif}
+
+    /* mesh */
+    .bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .bg-mesh::before{content:'';position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(255,91,46,.13) 0%,transparent 65%);top:-200px;left:-200px;animation:dA 16s ease-in-out infinite alternate}
+    .bg-mesh::after{content:'';position:absolute;width:550px;height:550px;background:radial-gradient(circle,rgba(90,55,210,.12) 0%,transparent 65%);bottom:-150px;right:-150px;animation:dB 20s ease-in-out infinite alternate}
+    @keyframes dA{from{transform:translate(0,0) scale(1)}to{transform:translate(80px,60px) scale(1.2)}}
+    @keyframes dB{from{transform:translate(0,0) scale(1)}to{transform:translate(-60px,-80px) scale(1.15)}}
+    .grain{position:fixed;inset:0;z-index:1;opacity:.022;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
+
+    .page-wrap{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column}
+
+    /* ── NAV ── */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--bdr);backdrop-filter:blur(14px);background:rgba(15,14,23,.65);position:sticky;top:0;z-index:200}
+    .logo{font-size:1.45rem;font-weight:800;letter-spacing:-.02em;color:#fff;text-decoration:none}
+    .logo span{color:var(--pr)}
+    .nav-links{display:flex;gap:28px;list-style:none;align-items:center}
+    .nav-links a{text-decoration:none;font-size:.875rem;color:var(--mut);transition:color .2s}
+    .nav-links a:hover{color:#fff}
+    .btn-nav{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;padding:9px 22px;border-radius:9px;border:1px solid rgba(255,91,46,.5);background:rgba(255,91,46,.1);color:var(--pr);cursor:pointer;text-decoration:none;transition:background .2s,border-color .2s,color .2s;letter-spacing:.02em}
+    .btn-nav:hover{background:var(--pr);border-color:var(--pr);color:#fff}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+    .hamburger span{width:22px;height:2px;background:var(--mut);border-radius:2px;transition:background .2s}
+    .hamburger:hover span{background:#fff}
+
+    /* ── BREADCRUMB ── */
+    .breadcrumb{padding:18px 48px;display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--mut)}
+    .breadcrumb a{color:var(--mut);text-decoration:none;transition:color .2s}
+    .breadcrumb a:hover{color:var(--txt)}
+    .breadcrumb .sep{color:var(--mut2)}
+    .breadcrumb .current{color:var(--txt)}
+
+    /* ── MAIN LAYOUT ── */
+    main{flex:1;padding:0 48px 80px;max-width:1200px;margin:0 auto;width:100%}
+
+    /* ── COVER + PROFILE HEADER ── */
+    .cover{
+      width:100%;height:220px;border-radius:20px;overflow:hidden;
+      background:linear-gradient(135deg,#1C1A2E 0%,#2A1F3D 40%,#1A2040 100%);
+      position:relative;margin-bottom:0;
+    }
+    .cover-pattern{
+      position:absolute;inset:0;
+      background-image:
+        radial-gradient(circle at 20% 50%,rgba(255,91,46,.25) 0%,transparent 50%),
+        radial-gradient(circle at 80% 30%,rgba(90,55,210,.2) 0%,transparent 50%),
+        radial-gradient(circle at 60% 80%,rgba(255,138,101,.15) 0%,transparent 40%);
+    }
+    .cover-dots{
+      position:absolute;inset:0;opacity:.12;
+      background-image:radial-gradient(circle,rgba(255,255,255,.8) 1px,transparent 1px);
+      background-size:28px 28px;
+    }
+    .verified-cover{
+      position:absolute;top:20px;right:20px;
+      background:rgba(255,91,46,.15);border:1px solid rgba(255,91,46,.3);
+      border-radius:100px;padding:6px 14px;
+      font-size:.7rem;font-weight:600;color:var(--acc);letter-spacing:.08em;text-transform:uppercase;
+      display:flex;align-items:center;gap:6px;
+    }
+    .verified-cover::before{content:'✓';background:var(--pr);color:#fff;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
+
+    /* profile header card */
+    .profile-header{
+      background:var(--surf);border:1px solid var(--bdr);
+      border-radius:24px;padding:0 36px 32px;
+      position:relative;margin-top:-40px;
+      box-shadow:0 20px 70px rgba(0,0,0,.45);
+      animation:fadeUp .55s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+    .profile-top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .avatar-wrap{margin-top:-52px;flex-shrink:0}
+    .avatar{
+      width:110px;height:110px;border-radius:50%;
+      background:linear-gradient(135deg,#FF5B2E,#FF8A65);
+      border:4px solid var(--surf);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;color:#fff;
+      position:relative;overflow:hidden;
+    }
+    .avatar::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 50%);
+    }
+    .verified-badge{
+      position:absolute;bottom:4px;right:4px;
+      width:26px;height:26px;border-radius:50%;
+      background:var(--pr);border:2px solid var(--surf);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.65rem;color:#fff;font-weight:700;z-index:1;
+    }
+
+    .profile-actions{display:flex;gap:10px;align-items:center;padding-top:16px;flex-wrap:wrap}
+
+    .btn-primary{
+      font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;
+      padding:12px 28px;border-radius:12px;border:none;
+      background:linear-gradient(135deg,#FF5B2E,#FF8A65);
+      color:#fff;cursor:pointer;letter-spacing:.02em;
+      box-shadow:0 4px 20px rgba(255,91,46,.35);
+      transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;
+    }
+    .btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 60%);opacity:0;transition:opacity .2s}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(255,91,46,.45)}
+    .btn-primary:hover::before{opacity:1}
+    .btn-secondary{
+      font-family:'Syne',sans-serif;font-size:.88rem;font-weight:600;
+      padding:11px 24px;border-radius:12px;
+      border:1px solid var(--bdr);background:rgba(255,255,255,.04);
+      color:var(--txt);cursor:pointer;
+      transition:background .2s,border-color .2s;
+    }
+    .btn-secondary:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}
+
+    .share-btn{
+      width:42px;height:42px;border-radius:11px;
+      border:1px solid var(--bdr);background:rgba(255,255,255,.03);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:var(--mut);transition:all .2s;flex-shrink:0;
+    }
+    .share-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+
+    /* profile info */
+    .profile-info{margin-top:20px}
+    .profile-name-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+    .profile-name{font-size:1.75rem;font-weight:800;color:#fff;letter-spacing:-.03em}
+    .niche-tag{
+      background:rgba(255,91,46,.12);border:1px solid rgba(255,91,46,.25);
+      border-radius:100px;padding:4px 12px;
+      font-size:.72rem;font-weight:600;color:var(--acc);letter-spacing:.06em;text-transform:uppercase;
+    }
+    .profile-meta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+    .meta-item{display:flex;align-items:center;gap:6px;font-size:.83rem;color:var(--mut)}
+    .meta-item svg{flex-shrink:0;opacity:.7}
+
+    /* quick stats row */
+    .quick-stats{display:flex;gap:0;border:1px solid var(--bdr);border-radius:14px;overflow:hidden;background:var(--surf2)}
+    .qs-item{flex:1;padding:14px 18px;text-align:center;border-right:1px solid var(--bdr);transition:background .2s}
+    .qs-item:last-child{border-right:none}
+    .qs-item:hover{background:rgba(255,255,255,.03)}
+    .qs-val{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:-.02em}
+    .qs-val span{color:var(--pr)}
+    .qs-lbl{font-size:.7rem;color:var(--mut);margin-top:2px;letter-spacing:.02em}
+
+    /* ── TWO-COL LAYOUT ── */
+    .content-grid{display:grid;grid-template-columns:1fr 340px;gap:24px;margin-top:24px}
+
+    /* ── CARD BASE ── */
+    .card{
+      background:var(--surf);border:1px solid var(--bdr);
+      border-radius:20px;padding:28px;
+      box-shadow:0 8px 40px rgba(0,0,0,.3);
+    }
+    .card+.card{margin-top:20px}
+    .card-title{
+      font-size:1rem;font-weight:700;color:#fff;letter-spacing:-.01em;
+      margin-bottom:20px;display:flex;align-items:center;gap:8px;
+    }
+    .card-title::before{content:'';width:3px;height:16px;background:var(--pr);border-radius:2px;flex-shrink:0}
+
+    /* ── ABOUT ── */
+    .about-text{font-size:.9rem;line-height:1.75;color:var(--mut);font-weight:300}
+    .about-text strong{color:var(--txt);font-weight:500}
+
+    .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+    .tag{
+      background:rgba(255,255,255,.04);border:1px solid var(--bdr);
+      border-radius:8px;padding:5px 12px;
+      font-size:.76rem;color:var(--mut);transition:all .2s;cursor:default;
+    }
+    .tag:hover{background:rgba(255,91,46,.08);border-color:rgba(255,91,46,.25);color:var(--acc)}
+
+    /* ── CONTENT GRID ── */
+    .posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .post-item{
+      aspect-ratio:1;border-radius:12px;overflow:hidden;
+      position:relative;cursor:pointer;
+      background:var(--surf2);
+    }
+    .post-item img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
+    .post-overlay{
+      position:absolute;inset:0;
+      background:rgba(15,14,23,.75);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+      opacity:0;transition:opacity .25s;
+    }
+    .post-item:hover img{transform:scale(1.06)}
+    .post-item:hover .post-overlay{opacity:1}
+    .post-stat{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#fff}
+    .post-stat-lbl{font-size:.65rem;color:rgba(255,255,255,.5);letter-spacing:.05em}
+
+    /* placeholder post backgrounds */
+    .post-bg-1{background:linear-gradient(135deg,#2A1F3D,#1A2040)}
+    .post-bg-2{background:linear-gradient(135deg,#1C2A1F,#1A2030)}
+    .post-bg-3{background:linear-gradient(135deg,#2A201A,#1A1E2A)}
+    .post-bg-4{background:linear-gradient(135deg,#1A2A2A,#201A2A)}
+    .post-bg-5{background:linear-gradient(135deg,#2A1A1A,#1A2030)}
+    .post-bg-6{background:linear-gradient(135deg,#1F1A2A,#2A2A1A)}
+
+    .post-icon{font-size:1.8rem;opacity:.3;margin-bottom:4px}
+
+    /* ── REVIEWS ── */
+    .review-card{
+      background:var(--surf2);border:1px solid var(--bdr);
+      border-radius:14px;padding:20px;margin-bottom:14px;
+      transition:border-color .2s;
+    }
+    .review-card:hover{border-color:rgba(255,91,46,.2)}
+    .review-card:last-child{margin-bottom:0}
+    .review-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .reviewer-avatar{
+      width:40px;height:40px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#fff;flex-shrink:0;
+    }
+    .reviewer-name{font-size:.875rem;font-weight:600;color:#fff}
+    .reviewer-biz{font-size:.75rem;color:var(--mut);margin-top:1px}
+    .stars{color:#FFB800;font-size:.8rem;letter-spacing:1px;margin-left:auto}
+    .review-text{font-size:.83rem;line-height:1.65;color:var(--mut);font-weight:300}
+    .review-date{font-size:.72rem;color:var(--mut2);margin-top:8px}
+
+    /* ── RIGHT SIDEBAR ── */
+    .sidebar{display:flex;flex-direction:column;gap:20px}
+
+    /* pricing */
+    .pricing-item{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 0;border-bottom:1px solid var(--bdr);
+    }
+    .pricing-item:last-of-type{border-bottom:none;padding-bottom:0}
+    .pricing-label{font-size:.85rem;color:var(--mut);display:flex;align-items:center;gap:8px}
+    .pricing-label .icon{
+      width:30px;height:30px;border-radius:8px;
+      background:rgba(255,91,46,.1);border:1px solid rgba(255,91,46,.15);
+      display:flex;align-items:center;justify-content:center;font-size:.8rem;
+    }
+    .pricing-amount{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:#fff}
+    .pricing-amount small{font-size:.7rem;color:var(--mut);font-family:'DM Sans',sans-serif;font-weight:300}
+
+    .package-box{
+      background:linear-gradient(135deg,rgba(255,91,46,.12),rgba(90,55,210,.08));
+      border:1px solid rgba(255,91,46,.2);border-radius:14px;padding:18px;margin-top:4px;
+    }
+    .package-name{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--acc);margin-bottom:6px}
+    .package-includes{list-style:none;display:flex;flex-direction:column;gap:5px}
+    .package-includes li{font-size:.78rem;color:var(--mut);display:flex;align-items:center;gap:7px}
+    .package-includes li::before{content:'✓';color:var(--pr);font-weight:700;font-size:.7rem}
+    .package-price{margin-top:14px;display:flex;align-items:baseline;gap:6px}
+    .package-price .amount{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#fff}
+    .package-price .period{font-size:.78rem;color:var(--mut)}
+
+    /* availability */
+    .avail-indicator{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+    .avail-dot{width:8px;height:8px;border-radius:50%;background:#22C55E;flex-shrink:0;animation:pulse2 2s infinite}
+    @keyframes pulse2{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+    .avail-text{font-size:.83rem;color:#22C55E;font-weight:500}
+    .avail-slots{font-size:.75rem;color:var(--mut);margin-top:2px}
+
+    /* social links */
+    .social-links{display:flex;gap:10px;flex-wrap:wrap}
+    .social-btn{
+      display:flex;align-items:center;gap:8px;
+      padding:9px 16px;border-radius:10px;
+      border:1px solid var(--bdr);background:rgba(255,255,255,.03);
+      font-size:.8rem;color:var(--txt);text-decoration:none;
+      transition:all .2s;flex:1;justify-content:center;
+    }
+    .social-btn:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15)}
+    .social-btn.insta:hover{border-color:rgba(225,48,108,.4);background:rgba(225,48,108,.08);color:#E1306C}
+    .social-btn.yt:hover{border-color:rgba(255,0,0,.4);background:rgba(255,0,0,.08);color:#FF0000}
+
+    /* trust signals */
+    .trust-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--bdr)}
+    .trust-row:last-child{border-bottom:none;padding-bottom:0}
+    .trust-icon{width:34px;height:34px;border-radius:9px;background:rgba(255,91,46,.08);border:1px solid rgba(255,91,46,.12);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+    .trust-label{font-size:.8rem;color:var(--txt);font-weight:500}
+    .trust-sub{font-size:.72rem;color:var(--mut)}
+
+    /* ── FOOTER ── */
+    footer{
+      border-top:1px solid var(--bdr);padding:22px 48px;
+      display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    }
+    footer .copy{font-size:.78rem;color:var(--mut)}
+    footer .copy span{color:var(--pr)}
+    .footer-links{display:flex;gap:20px;list-style:none}
+    .footer-links a{font-size:.78rem;color:var(--mut);text-decoration:none;transition:color .2s}
+    .footer-links a:hover{color:#fff}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:960px){
+      .content-grid{grid-template-columns:1fr}
+      .sidebar{order:-1}
+    }
+    @media(max-width:768px){
+      nav{padding:16px 20px}
+      .nav-links,.btn-nav{display:none}
+      .hamburger{display:flex}
+      main{padding:0 16px 60px}
+      .breadcrumb{padding:14px 16px}
+      .profile-header{padding:0 20px 24px}
+      .quick-stats{flex-wrap:wrap}
+      .qs-item{min-width:calc(50% - 1px)}
+      .posts-grid{grid-template-columns:repeat(3,1fr)}
+      footer{padding:16px 20px;flex-direction:column;align-items:center;text-align:center}
+      .footer-links{justify-content:center}
+    }
+    @media(max-width:480px){
+      .profile-name{font-size:1.4rem}
+      .posts-grid{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="grain"></div>
+
+<div class="page-wrap">
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#" class="logo">Influ<span>Connect</span></a>
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Explore Influencers</a></li>
+      <li><a href="#">How it Works</a></li>
+      <li><a href="#">Login</a></li>
+    </ul>
+    <a href="#" class="btn-nav">Get Started</a>
+    <div class="hamburger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb" style="padding-left:48px">
+    <a href="#">Home</a>
+    <span class="sep">›</span>
+    <a href="#">Explore Influencers</a>
+    <span class="sep">›</span>
+    <span class="current">Rahul Sharma</span>
+  </div>
+
+  <main>
+
+    <!-- COVER -->
+    <div class="cover">
+      <div class="cover-pattern"></div>
+      <div class="cover-dots"></div>
+      <div class="verified-cover">Verified Creator</div>
+    </div>
+
+    <!-- PROFILE HEADER -->
+    <div class="profile-header">
+      <div class="profile-top">
+        <div class="avatar-wrap">
+          <div class="avatar">
+            RS
+            <div class="verified-badge">✓</div>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button class="btn-primary">📅 Book Now</button>
+          <button class="btn-secondary">✉ Contact</button>
+          <div class="share-btn" title="Share profile">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-info">
+        <div class="profile-name-row">
+          <h1 class="profile-name">Rahul Sharma</h1>
+          <span class="niche-tag">Food Blogger</span>
+        </div>
+        <div class="profile-meta">
+          <div class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Mumbai, Maharashtra
+          </div>
+          <div class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Member since Jan 2023
+          </div>
+          <div class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            4.9 Rating (38 reviews)
+          </div>
+          <div class="meta-item" style="color:#22C55E">
+            <span style="width:7px;height:7px;border-radius:50%;background:#22C55E;display:inline-block"></span>
+            Available for bookings
+          </div>
+        </div>
+
+        <!-- Quick stats -->
+        <div class="quick-stats">
+          <div class="qs-item">
+            <div class="qs-val">2.4<span>L</span></div>
+            <div class="qs-lbl">Followers</div>
+          </div>
+          <div class="qs-item">
+            <div class="qs-val">8.7<span>%</span></div>
+            <div class="qs-lbl">Engagement</div>
+          </div>
+          <div class="qs-item">
+            <div class="qs-val">1.2<span>L</span></div>
+            <div class="qs-lbl">Avg Views</div>
+          </div>
+          <div class="qs-item">
+            <div class="qs-val">84</div>
+            <div class="qs-lbl">Collabs Done</div>
+          </div>
+          <div class="qs-item">
+            <div class="qs-val">48<span>hr</span></div>
+            <div class="qs-lbl">Avg Response</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /profile-header -->
+
+    <!-- CONTENT GRID -->
+    <div class="content-grid">
+
+      <!-- LEFT COLUMN -->
+      <div class="left-col">
+
+        <!-- About -->
+        <div class="card">
+          <h3 class="card-title">About Rahul</h3>
+          <p class="about-text">
+            Hey! I'm Rahul — a <strong>food blogger and digital creator</strong> based in Mumbai with a passion for exploring hidden gems, street food, and restaurant culture across Maharashtra. I create authentic, high-engagement content that resonates deeply with food lovers aged 18–35.
+            <br/><br/>
+            Over the past <strong>3+ years</strong>, I've collaborated with 80+ local restaurants, cloud kitchens, and food startups — driving real footfall and measurable sales. My content style blends honest reviews with cinematic short-form videos that make people want to visit instantly.
+          </p>
+          <div class="tags">
+            <span class="tag">#FoodBlogger</span>
+            <span class="tag">#MumbaiFoods</span>
+            <span class="tag">#StreetFood</span>
+            <span class="tag">#RestaurantReview</span>
+            <span class="tag">#FoodPhotography</span>
+            <span class="tag">#LocalEats</span>
+            <span class="tag">#Reels</span>
+            <span class="tag">#Lifestyle</span>
+          </div>
+        </div>
+
+        <!-- Content Preview -->
+        <div class="card" style="margin-top:20px">
+          <h3 class="card-title">Recent Content</h3>
+          <div class="posts-grid">
+
+            <div class="post-item post-bg-1">
+              <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:10px">
+                <div style="font-size:2rem;opacity:.35">🍜</div>
+                <div style="font-size:.6rem;color:rgba(255,255,255,.25);text-align:center;line-height:1.4">Ramen Review<br/>Bandra</div>
+              </div>
+              <div class="post-overlay">
+                <div class="post-stat">48K</div>
+                <div class="post-stat-lbl">VIEWS</div>
+              </div>
+            </div>
+
+            <div class="post-item post-bg-2">
+              <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:10px">
+                <div style="font-size:2rem;opacity:.35">🍕</div>
+                <div style="font-size:.6rem;color:rgba(255,255,255,.25);text-align:center;line-height:1.4">Pizza Collab<br/>Juhu</div>
+              </div>
+              <div class="post-overlay">
+                <div class="post-stat">92K</div>
+                <div class="post-stat-lbl">VIEWS</div>
+              </div>
+            </div>
+
+            <div class="post-item post-bg-3">
+              <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:10px">
+                <div style="font-size:2rem;opacity:.35">🥘</div>
+                <div style="font-size:.6rem;color:rgba(255,255,255,.25);text-align:center;line-height:1.4">Biryani Spot<br/>Dharavi</div>
+              </div>
+              <div class="post-overlay">
+                <div class="post-stat">1.1L</div>
+                <div class="post-stat-lbl">VIEWS</div>
+              </div>
+            </div>
+
+            <div class="post-item post-bg-4">
+              <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:10px">
+                <div style="font-size:2rem;opacity:.35">☕</div>
+                <div style="font-size:.6rem;color:rgba(255,255,255,.25);text-align:center;line-height:1.4">Café Tour<br/>Colaba</div>
+              </div>
+              <div class="post-overlay">
+                <div class="post-stat">67K</div>
+                <div class="post-stat-lbl">VIEWS</div>
+              </div>
+            </div>
+
+            <div class="post-item post-bg-5">
+              <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:10px">
+                <div style="font-size:2rem;opacity:.35">🍣</div>
+                <div style="font-size:.6rem;color:rgba(255,255,255,.25);text-align:center;line-height:1.4">Sushi Night<br/>Andheri</div>
+              </div>
+              <div class="post-overlay">
+                <div class="post-stat">55K</div>
+                <div class="post-stat-lbl">VIEWS</div>
+              </div>
+            </div>
+
+            <div class="post-item post-bg-6">
+              <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:10px">
+                <div style="font-size:2rem;opacity:.35">🧆</div>
+                <div style="font-size:.6rem;color:rgba(255,255,255,.25);text-align:center;line-height:1.4">Street Food<br/>Dadar</div>
+              </div>
+              <div class="post-overlay">
+                <div class="post-stat">78K</div>
+                <div class="post-stat-lbl">VIEWS</div>
+              </div>
+            </div>
+
+          </div>
+          <p style="font-size:.75rem;color:var(--mut2);margin-top:14px;text-align:center">Showing 6 of 240+ posts · <a href="#" style="color:var(--pr);text-decoration:none">View all on Instagram →</a></p>
+        </div>
+
+        <!-- Reviews -->
+        <div class="card" style="margin-top:20px">
+          <h3 class="card-title">Brand Reviews</h3>
+
+          <div class="review-card">
+            <div class="review-top">
+              <div class="reviewer-avatar" style="background:linear-gradient(135deg,#FF5B2E,#FF8A65)">ZF</div>
+              <div>
+                <div class="reviewer-name">Zara Foods</div>
+                <div class="reviewer-biz">Cloud Kitchen · Mumbai</div>
+              </div>
+              <div class="stars">★★★★★</div>
+            </div>
+            <p class="review-text">Rahul delivered outstanding results for our new biryani launch. His reel got over 95K views organically and we saw a 40% spike in orders within the first week. Very professional, on-time delivery, and genuinely authentic content. Highly recommended for any food brand!</p>
+            <div class="review-date">📅 February 2025 · Paid Collaboration</div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-top">
+              <div class="reviewer-avatar" style="background:linear-gradient(135deg,#6437E0,#A56BFF)">BK</div>
+              <div>
+                <div class="reviewer-name">Brew & Kettle</div>
+                <div class="reviewer-biz">Café Chain · Pune & Mumbai</div>
+              </div>
+              <div class="stars">★★★★★</div>
+            </div>
+            <p class="review-text">We partnered with Rahul for our new café opening in Bandra and the footfall was incredible. His storytelling style makes viewers feel like they're already there. The Instagram story series drove 200+ direct visits in 3 days. Will definitely collaborate again!</p>
+            <div class="review-date">📅 January 2025 · Paid Collaboration</div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-top">
+              <div class="reviewer-avatar" style="background:linear-gradient(135deg,#22C55E,#16A34A)">SP</div>
+              <div>
+                <div class="reviewer-name">Spice Paradise</div>
+                <div class="reviewer-biz">Restaurant · Thane</div>
+              </div>
+              <div class="stars">★★★★☆</div>
+            </div>
+            <p class="review-text">Great experience working with Rahul. His audience is very engaged and genuinely interested in food. We got our best-performing month right after the collab. The reel editing quality was top-notch. Minor delay in delivery but overall very satisfied with results.</p>
+            <div class="review-date">📅 December 2024 · Paid Collaboration</div>
+          </div>
+
+          <div style="text-align:center;margin-top:6px">
+            <a href="#" style="font-size:.8rem;color:var(--pr);text-decoration:none;font-weight:500">View all 38 reviews →</a>
+          </div>
+        </div>
+
+      </div><!-- /left-col -->
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="sidebar">
+
+        <!-- Availability -->
+        <div class="card">
+          <div class="avail-indicator">
+            <div class="avail-dot"></div>
+            <div>
+              <div class="avail-text">Available Now</div>
+              <div class="avail-slots">3 slots open this month</div>
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%;margin-bottom:10px">📅 Book Now</button>
+          <button class="btn-secondary" style="width:100%">✉ Send Message</button>
+        </div>
+
+        <!-- Pricing -->
+        <div class="card">
+          <h3 class="card-title">Pricing</h3>
+
+          <div class="pricing-item">
+            <div class="pricing-label">
+              <div class="icon">📸</div>
+              Instagram Post
+            </div>
+            <div class="pricing-amount">₹8,000 <small>/post</small></div>
+          </div>
+          <div class="pricing-item">
+            <div class="pricing-label">
+              <div class="icon">🎬</div>
+              Instagram Reel
+            </div>
+            <div class="pricing-amount">₹15,000 <small>/reel</small></div>
+          </div>
+          <div class="pricing-item">
+            <div class="pricing-label">
+              <div class="icon">📖</div>
+              Story Series
+            </div>
+            <div class="pricing-amount">₹5,000 <small>/5 stories</small></div>
+          </div>
+          <div class="pricing-item">
+            <div class="pricing-label">
+              <div class="icon">🔴</div>
+              Live Session
+            </div>
+            <div class="pricing-amount">₹12,000 <small>/hr</small></div>
+          </div>
+
+          <div class="package-box">
+            <div class="package-name">⚡ Starter Package</div>
+            <ul class="package-includes">
+              <li>1 × Instagram Reel</li>
+              <li>1 × Carousel Post</li>
+              <li>5 × Story frames</li>
+              <li>Usage rights (30 days)</li>
+              <li>Performance report</li>
+            </ul>
+            <div class="package-price">
+              <div class="amount">₹24,000</div>
+              <div class="period">/ package · save ₹4,000</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="card">
+          <h3 class="card-title">Social Profiles</h3>
+          <div class="social-links">
+            <a href="#" class="social-btn insta">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              Instagram
+            </a>
+            <a href="#" class="social-btn yt">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.4a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+              YouTube
+            </a>
+          </div>
+          <div style="margin-top:14px;padding:12px;background:var(--surf2);border-radius:10px;border:1px solid var(--bdr)">
+            <div style="font-size:.72rem;color:var(--mut2);letter-spacing:.05em;text-transform:uppercase;font-weight:600;margin-bottom:8px">Audience Split</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:.75rem;color:var(--mut);width:60px">Mumbai</div>
+                <div style="flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">
+                  <div style="width:52%;height:100%;background:linear-gradient(90deg,var(--pr),var(--acc));border-radius:3px"></div>
+                </div>
+                <div style="font-size:.72rem;color:var(--txt);width:28px;text-align:right">52%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:.75rem;color:var(--mut);width:60px">Pune</div>
+                <div style="flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">
+                  <div style="width:22%;height:100%;background:linear-gradient(90deg,#6437E0,#A56BFF);border-radius:3px"></div>
+                </div>
+                <div style="font-size:.72rem;color:var(--txt);width:28px;text-align:right">22%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:.75rem;color:var(--mut);width:60px">Others</div>
+                <div style="flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">
+                  <div style="width:26%;height:100%;background:rgba(255,255,255,.15);border-radius:3px"></div>
+                </div>
+                <div style="font-size:.72rem;color:var(--txt);width:28px;text-align:right">26%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust Signals -->
+        <div class="card">
+          <h3 class="card-title">Why Book Rahul</h3>
+          <div class="trust-row">
+            <div class="trust-icon">✅</div>
+            <div><div class="trust-label">Identity Verified</div><div class="trust-sub">PAN & Aadhaar confirmed</div></div>
+          </div>
+          <div class="trust-row">
+            <div class="trust-icon">🔒</div>
+            <div><div class="trust-label">Secure Payments</div><div class="trust-sub">Escrow-protected via InfluConnect</div></div>
+          </div>
+          <div class="trust-row">
+            <div class="trust-icon">📊</div>
+            <div><div class="trust-label">Real Analytics</div><div class="trust-sub">Verified Instagram insights</div></div>
+          </div>
+          <div class="trust-row">
+            <div class="trust-icon">⚡</div>
+            <div><div class="trust-label">Fast Delivery</div><div class="trust-sub">Avg 3–5 days turnaround</div></div>
+          </div>
+          <div class="trust-row">
+            <div class="trust-icon">🔁</div>
+            <div><div class="trust-label">84% Repeat Brands</div><div class="trust-sub">Brands keep coming back</div></div>
+          </div>
+        </div>
+
+      </div><!-- /sidebar -->
+
+    </div><!-- /content-grid -->
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p class="copy">© 2025 <span>InfluConnect</span>. All rights reserved.</p>
+    <ul class="footer-links">
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+      <li><a href="#">Help Center</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </footer>
+
+</div>
+</body>
+</html>

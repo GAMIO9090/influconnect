@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InfluConnect — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --brand-primary: #FF5B2E;
+      --brand-accent: #FF8A65;
+      --brand-dark: #0F0E17;
+      --brand-mid: #1C1A2E;
+      --brand-surface: #211F35;
+      --brand-border: rgba(255,255,255,0.08);
+      --brand-text: #E8E6F0;
+      --brand-muted: #7B78A0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--brand-dark);
+      color: var(--brand-text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, nav .logo {
+      font-family: 'Syne', sans-serif;
+    }
+
+    /* ── Animated mesh background ── */
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .bg-mesh::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(255,91,46,0.18) 0%, transparent 70%);
+      top: -200px; left: -200px;
+      animation: driftA 14s ease-in-out infinite alternate;
+    }
+    .bg-mesh::after {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(100,60,220,0.15) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      animation: driftB 18s ease-in-out infinite alternate;
+    }
+    .bg-orb {
+      position: absolute;
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(255,138,101,0.1) 0%, transparent 70%);
+      top: 50%; left: 60%;
+      transform: translate(-50%,-50%);
+      animation: driftC 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes driftA { from { transform: translate(0,0) scale(1); } to { transform: translate(80px,60px) scale(1.15); } }
+    @keyframes driftB { from { transform: translate(0,0) scale(1); } to { transform: translate(-60px,-80px) scale(1.1); } }
+    @keyframes driftC { from { transform: translate(-50%,-50%) scale(1); } to { transform: translate(-40%,-60%) scale(1.2); } }
+
+    /* ── Grain overlay ── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.025;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 180px;
+    }
+
+    /* ── Page content wrapper ── */
+    .page-wrap {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Navbar ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--brand-border);
+      backdrop-filter: blur(12px);
+      background: rgba(15,14,23,0.6);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+    .logo span {
+      color: var(--brand-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--brand-muted);
+      transition: color 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .nav-links a:hover { color: #fff; }
+
+    .btn-nav {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.825rem;
+      font-weight: 700;
+      padding: 9px 22px;
+      border-radius: 9px;
+      border: 1px solid rgba(255,91,46,0.5);
+      background: rgba(255,91,46,0.1);
+      color: var(--brand-primary);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .btn-nav:hover {
+      background: var(--brand-primary);
+      border-color: var(--brand-primary);
+      color: #fff;
+    }
+
+    /* hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      width: 22px; height: 2px;
+      background: var(--brand-muted);
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+    .hamburger:hover span { background: #fff; }
+
+    /* ── Main ── */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+    }
+
+    /* ── Login Card ── */
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--brand-surface);
+      border: 1px solid var(--brand-border);
+      border-radius: 24px;
+      padding: 44px 44px 40px;
+      box-shadow:
+        0 0 0 1px rgba(255,91,46,0.04),
+        0 24px 80px rgba(0,0,0,0.5),
+        0 4px 16px rgba(0,0,0,0.3);
+      animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* badge */
+    .card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,91,46,0.1);
+      border: 1px solid rgba(255,91,46,0.2);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--brand-accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+    .card-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--brand-primary);
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.75); }
+    }
+
+    .card h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .card .subtitle {
+      font-size: 0.9rem;
+      color: var(--brand-muted);
+      margin-bottom: 32px;
+      font-weight: 300;
+    }
+
+    /* divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--brand-border);
+    }
+    .divider span {
+      font-size: 0.75rem;
+      color: var(--brand-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* Google button */
+    .btn-google {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--brand-border);
+      background: rgba(255,255,255,0.03);
+      color: var(--brand-text);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      text-decoration: none;
+    }
+    .btn-google:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.15);
+    }
+    .btn-google svg { flex-shrink: 0; }
+
+    /* form */
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--brand-muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--brand-border);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    input[type="email"]::placeholder,
+    input[type="password"]::placeholder { color: rgba(123,120,160,0.5); }
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: rgba(255,91,46,0.5);
+      box-shadow: 0 0 0 3px rgba(255,91,46,0.1);
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* password wrapper */
+    .pw-wrap {
+      position: relative;
+    }
+    .pw-wrap input { padding-right: 44px; }
+    .pw-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--brand-muted);
+      padding: 4px;
+      line-height: 0;
+      transition: color 0.2s;
+    }
+    .pw-toggle:hover { color: #fff; }
+
+    /* row */
+    .form-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .remember input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--brand-primary);
+      cursor: pointer;
+    }
+    .remember span {
+      font-size: 0.825rem;
+      color: var(--brand-muted);
+    }
+    .forgot {
+      font-size: 0.825rem;
+      color: var(--brand-primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+    .forgot:hover { opacity: 0.75; }
+
+    /* login button */
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #fff;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #FF5B2E 0%, #FF8A65 100%);
+      box-shadow: 0 4px 24px rgba(255,91,46,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-login::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .btn-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px rgba(255,91,46,0.45);
+    }
+    .btn-login:hover::before { opacity: 1; }
+    .btn-login:active { transform: translateY(0); }
+
+    /* signup link */
+    .signup-text {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 0.85rem;
+      color: var(--brand-muted);
+    }
+    .signup-text a {
+      color: var(--brand-primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .signup-text a:hover { opacity: 0.75; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--brand-border);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    footer .copy {
+      font-size: 0.78rem;
+      color: var(--brand-muted);
+    }
+    footer .copy span { color: var(--brand-primary); }
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 0.78rem;
+      color: var(--brand-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #fff; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .nav-links, .btn-nav { display: none; }
+      .hamburger { display: flex; }
+
+      .card { padding: 32px 24px 28px; }
+      .card h2 { font-size: 1.65rem; }
+
+      footer { padding: 16px 20px; flex-direction: column; align-items: center; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+
+    @media (max-width: 420px) {
+      .card { padding: 28px 18px 24px; border-radius: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Ambient background -->
+<div class="bg-mesh">
+  <div class="bg-orb"></div>
+</div>
+<div class="grain"></div>
+
+<!-- Page -->
+<div class="page-wrap">
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">Influ<span>Connect</span></div>
+
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Explore Influencers</a></li>
+      <li><a href="#">How it Works</a></li>
+    </ul>
+
+    <a href="#" class="btn-nav">Get Started</a>
+
+    <!-- Mobile hamburger -->
+    <div class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main>
+    <div class="card">
+
+      <div class="card-badge">Secure Login</div>
+
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Login to your InfluConnect account</p>
+
+      <!-- Google -->
+      <a href="#" class="btn-google">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58Z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </a>
+
+      <div class="divider"><span>or continue with email</span></div>
+
+      <!-- Form -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password"/>
+          <button class="pw-toggle" onclick="togglePw()" aria-label="Toggle password visibility" type="button">
+            <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="remember">
+          <input type="checkbox"/>
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="forgot">Forgot password?</a>
+      </div>
+
+      <button class="btn-login" type="submit">Login →</button>
+
+      <p class="signup-text">
+        Don't have an account? <a href="#">Sign up free</a>
+      </p>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p class="copy">© 2025 <span>InfluConnect</span>. All rights reserved.</p>
+    <ul class="footer-links">
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+      <li><a href="#">Support</a></li>
+    </ul>
+  </footer>
+
+</div>
+
+<script>
+  function togglePw() {
+    const input = document.getElementById('password');
+    const icon  = document.getElementById('eye-icon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.innerHTML = `
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+      `;
+    } else {
+      input.type = 'password';
+      icon.innerHTML = `
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      `;
+    }
+  }
+</script>
+
+</body>
+</html>

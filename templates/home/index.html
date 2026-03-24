@@ -1105,15 +1105,18 @@
       </a>
 
       <!-- Desktop links -->
-      <ul class="nav-links">
+      <ul class="nav-links">                      
         <li><a href="#">Home</a></li>
-        <li><a href="#influencers">Explore Influencers</a></li>
+        <li><a href="/influencers/">Explore Influencers</a></li>
         <li><a href="#how-it-works">How it Works</a></li>
-        <li><a href="#">Login</a></li>
+        <li><a href="/login/">Login</a></li>
+        <li><a href="/dashboard/">Dashboard</a></li>
       </ul>
-      <a href="#" class="btn btn-dark" style="display:none;" id="nav-cta-desktop">
+      <a href="{% url 'get_started' %}" class="btn btn-dark" style="display:none;" id="nav-cta-desktop">
         Get Started
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+      </svg>
       </a>
 
       <!-- Hamburger -->
@@ -1284,10 +1287,12 @@
           Find Influencers
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
-        <a href="#" class="btn btn-outline">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--brand-500)"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          Join as Influencer
-        </a>
+        <a href="/join/" class="btn btn-outline">
+  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--brand-500)">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
+  </svg>
+  Join as Influencer
+</a>
       </div>
 
       <!-- Social proof -->

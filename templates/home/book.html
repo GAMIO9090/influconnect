@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Rahul Sharma — InfluConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --pr:#FF5B2E; --acc:#FF8A65;
+      --dark:#0F0E17; --mid:#1C1A2E;
+      --surf:#211F35; --surf2:#27253C; --surf3:#2E2B47;
+      --bdr:rgba(255,255,255,0.08); --bdr2:rgba(255,255,255,0.12);
+      --txt:#E8E6F0; --mut:#7B78A0; --mut2:#5A577A;
+      --green:#22C55E; --green-bg:rgba(34,197,94,0.1); --green-bdr:rgba(34,197,94,0.25);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--txt);min-height:100vh;overflow-x:hidden}
+    h1,h2,h3,h4,.logo{font-family:'Syne',sans-serif}
+
+    /* BG */
+    .bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .bg-mesh::before{content:'';position:absolute;width:750px;height:750px;background:radial-gradient(circle,rgba(255,91,46,.12) 0%,transparent 65%);top:-200px;left:-200px;animation:dA 16s ease-in-out infinite alternate}
+    .bg-mesh::after{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(90,55,210,.11) 0%,transparent 65%);bottom:-150px;right:-150px;animation:dB 20s ease-in-out infinite alternate}
+    @keyframes dA{from{transform:translate(0,0)}to{transform:translate(80px,60px) scale(1.15)}}
+    @keyframes dB{from{transform:translate(0,0)}to{transform:translate(-60px,-80px) scale(1.12)}}
+    .grain{position:fixed;inset:0;z-index:1;opacity:.02;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
+
+    .page-wrap{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column}
+
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--bdr);backdrop-filter:blur(14px);background:rgba(15,14,23,.7);position:sticky;top:0;z-index:200}
+    .logo{font-size:1.45rem;font-weight:800;letter-spacing:-.02em;color:#fff;text-decoration:none}
+    .logo span{color:var(--pr)}
+    .nav-links{display:flex;gap:28px;list-style:none;align-items:center}
+    .nav-links a{text-decoration:none;font-size:.875rem;color:var(--mut);transition:color .2s}
+    .nav-links a:hover{color:#fff}
+    .btn-nav{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;padding:9px 22px;border-radius:9px;border:1px solid rgba(255,91,46,.5);background:rgba(255,91,46,.1);color:var(--pr);cursor:pointer;text-decoration:none;transition:all .2s;letter-spacing:.02em}
+    .btn-nav:hover{background:var(--pr);border-color:var(--pr);color:#fff}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+    .hamburger span{width:22px;height:2px;background:var(--mut);border-radius:2px}
+
+    /* BREADCRUMB */
+    .breadcrumb{padding:16px 48px;display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--mut)}
+    .breadcrumb a{color:var(--mut);text-decoration:none;transition:color .2s}
+    .breadcrumb a:hover{color:var(--txt)}
+    .breadcrumb .sep{color:var(--mut2)}
+
+    /* PROGRESS BAR */
+    .progress-wrap{padding:0 48px 32px;max-width:1200px;margin:0 auto;width:100%}
+    .progress-steps{display:flex;align-items:center;gap:0}
+    .pstep{display:flex;align-items:center;gap:10px;font-size:.78rem;font-weight:500;color:var(--mut2);white-space:nowrap}
+    .pstep.active{color:var(--txt)}
+    .pstep.done{color:var(--pr)}
+    .pstep-num{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--mut2);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;font-family:'Syne',sans-serif;flex-shrink:0;transition:all .3s}
+    .pstep.active .pstep-num{border-color:var(--pr);background:rgba(255,91,46,.12);color:var(--pr)}
+    .pstep.done .pstep-num{border-color:var(--pr);background:var(--pr);color:#fff}
+    .pstep-line{flex:1;height:1.5px;background:var(--bdr);min-width:30px;max-width:80px}
+    .pstep-line.done{background:var(--pr)}
+
+    /* MAIN */
+    main{flex:1;padding:0 48px 80px;max-width:1200px;margin:0 auto;width:100%}
+
+    /* PAGE TITLE */
+    .page-title{margin-bottom:28px}
+    .page-title h1{font-size:1.75rem;font-weight:800;color:#fff;letter-spacing:-.03em;margin-bottom:6px}
+    .page-title p{font-size:.9rem;color:var(--mut);font-weight:300}
+
+    /* GRID */
+    .booking-grid{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+
+    /* CARD */
+    .card{background:var(--surf);border:1px solid var(--bdr);border-radius:22px;padding:28px;box-shadow:0 12px 50px rgba(0,0,0,.35);animation:fadeUp .5s cubic-bezier(.22,1,.36,1) both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    .card+.card{margin-top:20px}
+
+    .card-title{font-size:.95rem;font-weight:700;color:#fff;letter-spacing:-.01em;margin-bottom:22px;display:flex;align-items:center;gap:8px}
+    .card-title::before{content:'';width:3px;height:16px;background:var(--pr);border-radius:2px;flex-shrink:0}
+
+    /* INFLUENCER SUMMARY */
+    .inf-card{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+    .inf-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#FF5B2E,#FF8A65);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;flex-shrink:0;position:relative;border:3px solid var(--surf3)}
+    .inf-avatar .badge{position:absolute;bottom:1px;right:1px;width:20px;height:20px;border-radius:50%;background:var(--pr);border:2px solid var(--surf);display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#fff;font-weight:700}
+    .inf-info{flex:1;min-width:0}
+    .inf-name{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:4px}
+    .inf-niche{display:inline-block;background:rgba(255,91,46,.1);border:1px solid rgba(255,91,46,.22);border-radius:100px;padding:2px 10px;font-size:.68rem;font-weight:600;color:var(--acc);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+    .inf-meta{display:flex;gap:14px;flex-wrap:wrap}
+    .inf-meta-item{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--mut)}
+    .inf-stats{display:flex;gap:14px;margin-left:auto;flex-wrap:wrap}
+    .inf-stat{text-align:center;padding:10px 16px;background:var(--surf2);border-radius:12px;border:1px solid var(--bdr)}
+    .inf-stat .val{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:#fff}
+    .inf-stat .val span{color:var(--pr)}
+    .inf-stat .lbl{font-size:.65rem;color:var(--mut);margin-top:1px}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .col-full{grid-column:1/-1}
+
+    .field{display:flex;flex-direction:column;gap:7px}
+    .field label{font-size:.78rem;font-weight:500;color:var(--mut);letter-spacing:.02em}
+    .field label span{color:var(--pr)}
+
+    .field input,
+    .field select,
+    .field textarea{
+      width:100%;padding:12px 16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--bdr);border-radius:12px;
+      color:var(--txt);font-size:.875rem;
+      font-family:'DM Sans',sans-serif;outline:none;
+      transition:border-color .2s,box-shadow .2s,background .2s;
+      appearance:none;-webkit-appearance:none;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder{color:rgba(123,120,160,.45)}
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus{
+      border-color:rgba(255,91,46,.5);
+      box-shadow:0 0 0 3px rgba(255,91,46,.1);
+      background:rgba(255,255,255,.06);
+    }
+    .field select{
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237B78A0' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 14px center;
+      padding-right:38px;cursor:pointer;
+    }
+    .field select option{background:#1C1A2E;color:var(--txt)}
+    .field textarea{resize:vertical;min-height:110px;line-height:1.6}
+
+    /* input with icon */
+    .input-icon-wrap{position:relative}
+    .input-icon-wrap input{padding-left:42px}
+    .input-icon-wrap .iicon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mut);pointer-events:none}
+
+    /* section divider */
+    .section-sep{display:flex;align-items:center;gap:12px;margin:26px 0 22px;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut2)}
+    .section-sep::before,.section-sep::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+    /* campaign type selector */
+    .campaign-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .camp-opt{
+      position:relative;cursor:pointer;
+    }
+    .camp-opt input[type="radio"]{position:absolute;opacity:0;width:0;height:0}
+    .camp-label{
+      display:flex;flex-direction:column;align-items:center;gap:6px;
+      padding:14px 10px;border-radius:12px;
+      border:1.5px solid var(--bdr);background:rgba(255,255,255,.02);
+      cursor:pointer;transition:all .2s;text-align:center;
+    }
+    .camp-label:hover{border-color:rgba(255,91,46,.3);background:rgba(255,91,46,.04)}
+    .camp-opt input:checked+.camp-label{border-color:var(--pr);background:rgba(255,91,46,.1);box-shadow:0 0 0 3px rgba(255,91,46,.08)}
+    .camp-icon{font-size:1.4rem}
+    .camp-name{font-size:.8rem;font-weight:600;color:var(--txt)}
+    .camp-price{font-size:.7rem;color:var(--mut)}
+
+    /* date row */
+    .date-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+    /* form action buttons */
+    .form-actions{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+    .btn-confirm{
+      flex:1;min-width:180px;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;
+      padding:14px 28px;border-radius:12px;border:none;
+      background:linear-gradient(135deg,#FF5B2E,#FF8A65);color:#fff;
+      cursor:pointer;letter-spacing:.02em;
+      box-shadow:0 4px 22px rgba(255,91,46,.35);
+      transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;
+    }
+    .btn-confirm::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent 60%);opacity:0;transition:opacity .2s}
+    .btn-confirm:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(255,91,46,.45)}
+    .btn-confirm:hover::before{opacity:1}
+    .btn-cancel{
+      font-family:'Syne',sans-serif;font-size:.88rem;font-weight:600;
+      padding:13px 24px;border-radius:12px;
+      border:1px solid var(--bdr);background:rgba(255,255,255,.03);
+      color:var(--mut);cursor:pointer;
+      transition:all .2s;
+    }
+    .btn-cancel:hover{background:rgba(255,255,255,.07);border-color:var(--bdr2);color:var(--txt)}
+
+    /* note box */
+    .note-box{display:flex;align-items:flex-start;gap:10px;background:rgba(255,91,46,.07);border:1px solid rgba(255,91,46,.18);border-radius:12px;padding:14px 16px;margin-top:20px}
+    .note-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+    .note-text{font-size:.78rem;color:var(--mut);line-height:1.6}
+    .note-text strong{color:var(--acc);font-weight:500}
+
+    /* ── RIGHT SIDEBAR ── */
+
+    /* pricing summary */
+    .price-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bdr)}
+    .price-row:last-of-type{border-bottom:none}
+    .price-label{font-size:.83rem;color:var(--mut);display:flex;align-items:center;gap:8px}
+    .price-label .dot{width:7px;height:7px;border-radius:50%;background:var(--pr);flex-shrink:0}
+    .price-val{font-size:.9rem;font-weight:600;color:var(--txt)}
+    .price-val.green{color:var(--green)}
+
+    .total-box{background:linear-gradient(135deg,rgba(255,91,46,.12),rgba(90,55,210,.08));border:1px solid rgba(255,91,46,.22);border-radius:14px;padding:18px;margin-top:6px}
+    .total-label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+    .total-amount{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#fff;letter-spacing:-.03em}
+    .total-amount small{font-size:.9rem;color:var(--mut);font-family:'DM Sans',sans-serif;font-weight:300}
+    .total-note{font-size:.72rem;color:var(--mut2);margin-top:4px}
+
+    /* escrow info */
+    .escrow-steps{display:flex;flex-direction:column;gap:0}
+    .escrow-step{display:flex;gap:12px;position:relative;padding-bottom:18px}
+    .escrow-step:last-child{padding-bottom:0}
+    .escrow-step::after{content:'';position:absolute;left:14px;top:28px;bottom:0;width:1.5px;background:var(--bdr)}
+    .escrow-step:last-child::after{display:none}
+    .escrow-num{width:28px;height:28px;border-radius:50%;background:rgba(255,91,46,.12);border:1.5px solid rgba(255,91,46,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--pr);font-family:'Syne',sans-serif;flex-shrink:0;z-index:1}
+    .escrow-text .title{font-size:.82rem;font-weight:600;color:var(--txt);margin-bottom:2px}
+    .escrow-text .sub{font-size:.74rem;color:var(--mut);line-height:1.5}
+
+    /* guarantee badges */
+    .guarantee-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .guar-item{background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:12px;text-align:center;transition:border-color .2s}
+    .guar-item:hover{border-color:rgba(255,91,46,.2)}
+    .guar-icon{font-size:1.2rem;margin-bottom:5px}
+    .guar-label{font-size:.7rem;color:var(--mut);line-height:1.4}
+
+    /* availability tags */
+    .avail-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid var(--green-bdr);border-radius:100px;padding:5px 12px;font-size:.72rem;font-weight:500;color:var(--green)}
+    .avail-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--bdr);padding:22px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    footer .copy{font-size:.78rem;color:var(--mut)}
+    footer .copy span{color:var(--pr)}
+    .footer-links{display:flex;gap:20px;list-style:none}
+    .footer-links a{font-size:.78rem;color:var(--mut);text-decoration:none;transition:color .2s}
+    .footer-links a:hover{color:#fff}
+
+    /* RESPONSIVE */
+    @media(max-width:1024px){
+      .booking-grid{grid-template-columns:1fr}
+      .inf-stats{margin-left:0;width:100%}
+    }
+    @media(max-width:768px){
+      nav{padding:16px 20px}
+      .nav-links,.btn-nav{display:none}
+      .hamburger{display:flex}
+      main,.progress-wrap{padding-left:16px;padding-right:16px}
+      .breadcrumb{padding:12px 16px}
+      .form-grid{grid-template-columns:1fr}
+      .campaign-options{grid-template-columns:repeat(3,1fr)}
+      .date-row{grid-template-columns:1fr}
+      footer{padding:16px 20px;flex-direction:column;align-items:center;text-align:center}
+      .footer-links{justify-content:center}
+    }
+    @media(max-width:480px){
+      .inf-card{flex-direction:column;align-items:flex-start}
+      .campaign-options{grid-template-columns:1fr}
+      .guarantee-grid{grid-template-columns:1fr 1fr}
+      .form-actions{flex-direction:column}
+      .btn-confirm,.btn-cancel{width:100%;min-width:unset}
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="grain"></div>
+
+<div class="page-wrap">
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#" class="logo">Influ<span>Connect</span></a>
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Explore Influencers</a></li>
+      <li><a href="#">How it Works</a></li>
+      <li><a href="#">Login</a></li>
+    </ul>
+    <a href="#" class="btn-nav">Get Started</a>
+    <div class="hamburger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a href="#">Home</a><span class="sep">›</span>
+    <a href="#">Explore Influencers</a><span class="sep">›</span>
+    <a href="#">Rahul Sharma</a><span class="sep">›</span>
+    <span style="color:var(--txt)">Book Now</span>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-steps">
+      <div class="pstep done">
+        <div class="pstep-num">✓</div>
+        <span>Browse</span>
+      </div>
+      <div class="pstep-line done"></div>
+      <div class="pstep done">
+        <div class="pstep-num">✓</div>
+        <span>Select Influencer</span>
+      </div>
+      <div class="pstep-line done"></div>
+      <div class="pstep active">
+        <div class="pstep-num">3</div>
+        <span>Book & Pay</span>
+      </div>
+      <div class="pstep-line"></div>
+      <div class="pstep">
+        <div class="pstep-num">4</div>
+        <span>Confirmation</span>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="page-title">
+      <h1>Complete Your Booking</h1>
+      <p>Fill in your campaign details and confirm the booking with Rahul Sharma</p>
+    </div>
+
+    <div class="booking-grid">
+
+      <!-- ── LEFT: FORM ── -->
+      <div class="left-col">
+
+        <!-- Influencer Summary -->
+        <div class="card" style="animation-delay:.05s">
+          <h3 class="card-title">Booking with</h3>
+          <div class="inf-card">
+            <div class="inf-avatar">
+              RS
+              <div class="badge">✓</div>
+            </div>
+            <div class="inf-info">
+              <div class="inf-name">Rahul Sharma</div>
+              <div class="inf-niche">Food Blogger</div>
+              <div class="inf-meta">
+                <div class="inf-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  Mumbai
+                </div>
+                <div class="inf-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  4.9 (38 reviews)
+                </div>
+                <div class="inf-meta-item" style="color:var(--green)">
+                  <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>
+                  Available
+                </div>
+              </div>
+            </div>
+            <div class="inf-stats">
+              <div class="inf-stat">
+                <div class="val">2.4<span>L</span></div>
+                <div class="lbl">Followers</div>
+              </div>
+              <div class="inf-stat">
+                <div class="val">8.7<span>%</span></div>
+                <div class="lbl">Engagement</div>
+              </div>
+              <div class="inf-stat">
+                <div class="val">84</div>
+                <div class="lbl">Collabs</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="card" style="animation-delay:.1s">
+          <h3 class="card-title">Your Details</h3>
+          <div class="form-grid">
+
+            <div class="field">
+              <label>Full Name <span>*</span></label>
+              <div class="input-icon-wrap">
+                <svg class="iicon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input type="text" placeholder="Your full name"/>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Business / Shop Name <span>*</span></label>
+              <div class="input-icon-wrap">
+                <svg class="iicon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <input type="text" placeholder="e.g. Sharma Sweets"/>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Email Address <span>*</span></label>
+              <div class="input-icon-wrap">
+                <svg class="iicon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <input type="email" placeholder="you@example.com"/>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Phone Number <span>*</span></label>
+              <div class="input-icon-wrap">
+                <svg class="iicon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 6.08 6.08l.99-.99a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <input type="tel" placeholder="+91 98765 43210"/>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>City <span>*</span></label>
+              <div class="input-icon-wrap">
+                <svg class="iicon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <input type="text" placeholder="e.g. Mumbai"/>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Your Budget (₹) <span>*</span></label>
+              <div class="input-icon-wrap">
+                <svg class="iicon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <input type="number" placeholder="e.g. 15000"/>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="section-sep">Campaign Details</div>
+
+          <!-- Campaign Type -->
+          <div class="field col-full" style="margin-bottom:18px">
+            <label>Campaign Type <span>*</span></label>
+            <div class="campaign-options">
+              <label class="camp-opt">
+                <input type="radio" name="campaign" value="reel" checked/>
+                <div class="camp-label">
+                  <div class="camp-icon">🎬</div>
+                  <div class="camp-name">Reel</div>
+                  <div class="camp-price">₹15,000</div>
+                </div>
+              </label>
+              <label class="camp-opt">
+                <input type="radio" name="campaign" value="post"/>
+                <div class="camp-label">
+                  <div class="camp-icon">📸</div>
+                  <div class="camp-name">Post</div>
+                  <div class="camp-price">₹8,000</div>
+                </div>
+              </label>
+              <label class="camp-opt">
+                <input type="radio" name="campaign" value="story"/>
+                <div class="camp-label">
+                  <div class="camp-icon">📖</div>
+                  <div class="camp-name">Story</div>
+                  <div class="camp-price">₹5,000</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="form-grid" style="margin-bottom:18px">
+            <div class="field">
+              <label>Campaign Start Date <span>*</span></label>
+              <input type="date" style="color-scheme:dark"/>
+            </div>
+            <div class="field">
+              <label>Content Deadline <span>*</span></label>
+              <input type="date" style="color-scheme:dark"/>
+            </div>
+          </div>
+
+          <!-- Platform -->
+          <div class="form-grid" style="margin-bottom:18px">
+            <div class="field">
+              <label>Platform</label>
+              <select>
+                <option value="">Select platform</option>
+                <option value="instagram" selected>Instagram</option>
+                <option value="youtube">YouTube</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Number of Posts</label>
+              <select>
+                <option value="1" selected>1 post</option>
+                <option value="2">2 posts</option>
+                <option value="3">3 posts</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Message -->
+          <div class="field col-full" style="margin-bottom:8px">
+            <label>Campaign Brief / Requirements <span>*</span></label>
+            <textarea placeholder="Describe your campaign goals, key messages, preferred content style, any dos and don'ts, product details, etc.&#10;&#10;Example: We want a reel showcasing our new biryani launch at our Bandra outlet. Focus on taste, ambiance, and a CTA to visit the restaurant. Avoid mentions of competitors."></textarea>
+          </div>
+
+          <div class="note-box">
+            <div class="note-icon">📍</div>
+            <div class="note-text"><strong>Location-based matching:</strong> Rahul is based in Mumbai and primarily creates content for the Mumbai audience. Your campaign will reach highly relevant local customers.</div>
+          </div>
+
+          <div class="form-actions" style="margin-top:24px">
+            <button class="btn-confirm">🚀 Confirm Booking</button>
+            <button class="btn-cancel">Cancel</button>
+          </div>
+
+        </div><!-- /card -->
+
+      </div><!-- /left -->
+
+      <!-- ── RIGHT SIDEBAR ── -->
+      <div class="sidebar" style="display:flex;flex-direction:column;gap:20px">
+
+        <!-- Pricing Summary -->
+        <div class="card" style="animation-delay:.15s">
+          <h3 class="card-title">Pricing Summary</h3>
+
+          <div class="price-row">
+            <div class="price-label"><div class="dot"></div>Instagram Reel</div>
+            <div class="price-val">₹15,000</div>
+          </div>
+          <div class="price-row">
+            <div class="price-label"><div class="dot" style="background:var(--mut2)"></div>Platform Fee (5%)</div>
+            <div class="price-val">₹750</div>
+          </div>
+          <div class="price-row">
+            <div class="price-label"><div class="dot" style="background:var(--green)"></div>InfluConnect Discount</div>
+            <div class="price-val green">− ₹500</div>
+          </div>
+          <div class="price-row">
+            <div class="price-label"><div class="dot" style="background:var(--mut2)"></div>GST (18%)</div>
+            <div class="price-val">₹2,745</div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">Total Payable</div>
+            <div class="total-amount">₹17,995 <small>INR</small></div>
+            <div class="total-note">Held in escrow until content delivery</div>
+          </div>
+
+          <div style="margin-top:16px;padding:12px;background:var(--surf2);border-radius:11px;border:1px solid var(--bdr);font-size:.75rem;color:var(--mut);line-height:1.6">
+            💡 <strong style="color:var(--txt)">Bundle & Save:</strong> Add a story series to this booking and get <span style="color:var(--green)">₹2,000 off</span> the total package price.
+          </div>
+        </div>
+
+        <!-- Availability -->
+        <div class="card" style="animation-delay:.18s">
+          <h3 class="card-title">Availability</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <span class="avail-tag">3 slots open this month</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:14px">
+            <!-- Calendar mini-preview -->
+            <div style="text-align:center;font-size:.6rem;color:var(--mut2);font-weight:600;padding:4px 0">M</div>
+            <div style="text-align:center;font-size:.6rem;color:var(--mut2);font-weight:600;padding:4px 0">T</div>
+            <div style="text-align:center;font-size:.6rem;color:var(--mut2);font-weight:600;padding:4px 0">W</div>
+            <div style="text-align:center;font-size:.6rem;color:var(--mut2);font-weight:600;padding:4px 0">T</div>
+            <div style="text-align:center;font-size:.6rem;color:var(--mut2);font-weight:600;padding:4px 0">F</div>
+            <div style="text-align:center;font-size:.6rem;color:var(--mut2);font-weight:600;padding:4px 0">S</div>
+            <div style="text-align:center;font-size:.6rem;color:var(--mut2);font-weight:600;padding:4px 0">S</div>
+            <!-- Days row 1 -->
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px"></div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px"></div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut);padding:5px 3px;border-radius:6px">1</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut);padding:5px 3px;border-radius:6px">2</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut);padding:5px 3px;border-radius:6px">3</div>
+            <div style="text-align:center;font-size:.7rem;background:rgba(255,91,46,.15);color:var(--acc);padding:5px 3px;border-radius:6px;border:1px solid rgba(255,91,46,.25)">4</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">5</div>
+            <!-- row 2 -->
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">6</div>
+            <div style="text-align:center;font-size:.7rem;background:rgba(255,91,46,.08);color:var(--mut);padding:5px 3px;border-radius:6px;cursor:pointer">7</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">8</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">9</div>
+            <div style="text-align:center;font-size:.7rem;background:rgba(34,197,94,.1);color:var(--green);padding:5px 3px;border-radius:6px;border:1px solid rgba(34,197,94,.2)">10</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">11</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">12</div>
+            <!-- row 3 -->
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">13</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">14</div>
+            <div style="text-align:center;font-size:.7rem;background:rgba(34,197,94,.1);color:var(--green);padding:5px 3px;border-radius:6px;border:1px solid rgba(34,197,94,.2)">15</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">16</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">17</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">18</div>
+            <div style="text-align:center;font-size:.7rem;color:var(--mut2);padding:5px 3px;border-radius:6px">19</div>
+          </div>
+          <div style="display:flex;gap:12px;font-size:.68rem;color:var(--mut)">
+            <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:2px;background:rgba(34,197,94,.3);border:1px solid rgba(34,197,94,.4)"></div>Available</div>
+            <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:2px;background:rgba(255,91,46,.2);border:1px solid rgba(255,91,46,.3)"></div>Preferred</div>
+            <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:2px;background:rgba(255,255,255,.05)"></div>Booked</div>
+          </div>
+        </div>
+
+        <!-- How it Works (escrow) -->
+        <div class="card" style="animation-delay:.22s">
+          <h3 class="card-title">How Booking Works</h3>
+          <div class="escrow-steps">
+            <div class="escrow-step">
+              <div class="escrow-num">1</div>
+              <div class="escrow-text">
+                <div class="title">Pay into Escrow</div>
+                <div class="sub">Your payment is held securely until content is delivered</div>
+              </div>
+            </div>
+            <div class="escrow-step">
+              <div class="escrow-num">2</div>
+              <div class="escrow-text">
+                <div class="title">Influencer Creates Content</div>
+                <div class="sub">Rahul receives the brief and starts working on your campaign</div>
+              </div>
+            </div>
+            <div class="escrow-step">
+              <div class="escrow-num">3</div>
+              <div class="escrow-text">
+                <div class="title">You Review & Approve</div>
+                <div class="sub">Review the content before it goes live. Request revisions if needed</div>
+              </div>
+            </div>
+            <div class="escrow-step">
+              <div class="escrow-num">4</div>
+              <div class="escrow-text">
+                <div class="title">Content Goes Live</div>
+                <div class="sub">Funds are released to the influencer after your approval</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guarantees -->
+        <div class="card" style="animation-delay:.25s">
+          <h3 class="card-title">Our Guarantees</h3>
+          <div class="guarantee-grid">
+            <div class="guar-item">
+              <div class="guar-icon">🔒</div>
+              <div class="guar-label">Escrow<br/>Protection</div>
+            </div>
+            <div class="guar-item">
+              <div class="guar-icon">✏️</div>
+              <div class="guar-label">Free<br/>Revision</div>
+            </div>
+            <div class="guar-item">
+              <div class="guar-icon">💸</div>
+              <div class="guar-label">Full<br/>Refund</div>
+            </div>
+            <div class="guar-item">
+              <div class="guar-icon">🎯</div>
+              <div class="guar-label">Performance<br/>Report</div>
+            </div>
+          </div>
+          <div style="margin-top:14px;font-size:.73rem;color:var(--mut2);line-height:1.6;text-align:center">
+            If Rahul fails to deliver, you get a <strong style="color:var(--txt)">100% refund</strong>. No questions asked.
+          </div>
+        </div>
+
+      </div><!-- /sidebar -->
+    </div><!-- /booking-grid -->
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p class="copy">© 2025 <span>InfluConnect</span>. All rights reserved.</p>
+    <ul class="footer-links">
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+      <li><a href="#">Help Center</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </footer>
+
+</div>
+</body>
+</html>

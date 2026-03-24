@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find Influencers – InfluConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:        #f97316;
+      --orange-dark:   #ea580c;
+      --orange-light:  #fff7ed;
+      --orange-mid:    #fed7aa;
+      --ink:           #1a1714;
+      --ink-soft:      #4b4743;
+      --muted:         #8a847d;
+      --line:          #e8e4df;
+      --surface:       #faf8f5;
+      --white:         #ffffff;
+      --radius-sm:     10px;
+      --radius-md:     16px;
+      --radius-lg:     22px;
+      --shadow-sm:     0 2px 10px rgba(0,0,0,0.06);
+      --shadow-card:   0 2px 14px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+      --shadow-hover:  0 22px 52px -8px rgba(249,115,22,0.20), 0 8px 22px rgba(0,0,0,0.08);
+      --font-display:  'Syne', sans-serif;
+      --font-body:     'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--surface);
+      color: var(--ink);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes blobMove {
+      0%, 100% { transform: scale(1) translate(0,0); }
+      50%       { transform: scale(1.07) translate(10px,-14px); }
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.6; transform: scale(1.5); }
+    }
+
+    .anim-nav { animation: slideDown 0.5s ease both; }
+    .anim-1   { animation: fadeUp 0.55s ease both 0.08s; }
+    .anim-2   { animation: fadeUp 0.55s ease both 0.18s; }
+    .anim-3   { animation: fadeUp 0.55s ease both 0.28s; }
+    .anim-4   { animation: fadeUp 0.55s ease both 0.38s; }
+    .anim-5   { animation: fadeUp 0.55s ease both 0.48s; }
+    .anim-6   { animation: fadeIn 0.60s ease both 0.55s; }
+
+    /* ══════════ NAVBAR ══════════ */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,248,245,0.86);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
+      height: 64px;
+      display: flex; align-items: center;
+      padding: 0 clamp(16px, 5vw, 56px);
+    }
+    .navbar-inner {
+      width: 100%; max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .logo-mark {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(145deg, #fb923c, #ea580c);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 10px rgba(249,115,22,0.38);
+      transition: transform 0.25s; flex-shrink: 0;
+    }
+    .logo:hover .logo-mark { transform: rotate(-6deg) scale(1.1); }
+    .logo-text {
+      font-family: var(--font-display);
+      font-size: 1.18rem; font-weight: 700;
+      letter-spacing: -0.02em; line-height: 1;
+    }
+    .logo-text .dark   { color: var(--ink); }
+    .logo-text .accent { color: var(--orange); }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 28px; list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--ink-soft); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a.active {
+      color: var(--orange);
+      border-bottom: 1.5px solid var(--orange);
+      padding-bottom: 1px;
+    }
+    .btn-nav {
+      font-family: var(--font-display);
+      font-size: 0.85rem; font-weight: 600;
+      background: linear-gradient(135deg, #fb923c, #ea580c);
+      color: var(--white); border: none;
+      padding: 9px 22px; border-radius: 999px;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 3px 12px rgba(249,115,22,0.3);
+      transition: transform 0.18s, box-shadow 0.18s;
+      white-space: nowrap; display: inline-block;
+    }
+    .btn-nav:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249,115,22,0.4); }
+
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 6px;
+      border-radius: 8px; transition: background 0.2s;
+    }
+    .hamburger:hover { background: var(--orange-light); }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink-soft); border-radius: 2px;
+    }
+    .mobile-menu {
+      display: none; flex-direction: column; gap: 0;
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+    }
+    .mobile-menu.open { display: flex; animation: slideDown 0.3s ease; }
+    .mobile-menu a {
+      font-size: 0.9rem; font-weight: 500;
+      color: var(--ink-soft); text-decoration: none;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--line);
+      transition: color 0.2s, background 0.2s;
+    }
+    .mobile-menu a:hover  { color: var(--orange); background: var(--orange-light); }
+    .mobile-menu a.active { color: var(--orange); }
+    .mobile-menu .btn-nav {
+      margin: 12px 20px 16px;
+      text-align: center; border-radius: 10px;
+    }
+
+    /* ══════════ HERO ══════════ */
+    .hero {
+      position: relative; overflow: hidden;
+      padding: clamp(48px,8vw,80px) clamp(16px,5vw,40px) clamp(32px,5vw,52px);
+      text-align: center;
+    }
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+      animation: blobMove 9s ease-in-out infinite;
+    }
+    .blob-1 { width: 420px; height: 420px; background: rgba(251,146,60,0.18); top: -130px; right: -80px; }
+    .blob-2 { width: 300px; height: 300px; background: rgba(253,186,116,0.14); top: 10px; left: -80px; animation-delay: -4s; }
+    .blob-3 { width: 220px; height: 220px; background: rgba(249,115,22,0.09); bottom: -50px; left: 45%; animation-delay: -7s; }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--orange-light); border: 1px solid var(--orange-mid);
+      border-radius: 999px; padding: 5px 15px;
+      font-size: 0.78rem; font-weight: 500;
+      color: var(--orange-dark); letter-spacing: 0.02em; margin-bottom: 20px;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--orange); display: inline-block;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem,5.5vw,3.4rem);
+      font-weight: 800; line-height: 1.07;
+      letter-spacing: -0.03em; color: var(--ink); margin-bottom: 16px;
+    }
+    .hero-title .hl {
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(0.95rem,2.2vw,1.1rem);
+      color: var(--muted); max-width: 460px; margin: 0 auto;
+    }
+
+    /* ══════════ SEARCH ══════════ */
+    .search-section {
+      padding: 0 clamp(16px,5vw,40px) 36px;
+      max-width: 760px; margin: 0 auto;
+    }
+    .search-box {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      padding: 12px;
+      display: flex; gap: 10px; align-items: center;
+    }
+    .search-icon {
+      display: flex; align-items: center;
+      color: var(--muted); flex-shrink: 0; padding-left: 6px;
+    }
+    .search-input {
+      flex: 1; border: 1.5px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-family: var(--font-body);
+      font-size: 0.9rem; color: var(--ink);
+      padding: 11px 16px; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input::placeholder { color: #c2bdb7; }
+    .search-input:focus {
+      border-color: var(--orange); background: var(--white);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+    }
+    .btn-search {
+      font-family: var(--font-display);
+      font-size: 0.875rem; font-weight: 600;
+      background: linear-gradient(135deg, #fb923c, #ea580c);
+      color: var(--white); border: none;
+      padding: 11px 24px; border-radius: var(--radius-sm);
+      cursor: pointer; display: flex; align-items: center; gap: 7px;
+      white-space: nowrap; flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(249,115,22,0.3);
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .btn-search:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(249,115,22,0.42); }
+    .quick-tags {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      align-items: center; margin-top: 12px; justify-content: center;
+    }
+    .quick-label { font-size: 0.75rem; color: var(--muted); }
+    .quick-tag {
+      font-size: 0.75rem; font-weight: 500;
+      padding: 4px 13px; border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--white); color: var(--ink-soft);
+      cursor: pointer; transition: all 0.18s;
+    }
+    .quick-tag:hover, .quick-tag.active {
+      background: var(--orange-light);
+      border-color: var(--orange-mid); color: var(--orange-dark);
+    }
+
+    /* ══════════ FILTERS ══════════ */
+    .filters-section {
+      padding: 0 clamp(16px,5vw,40px) 28px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .filters-bar {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 14px 20px;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    }
+    .filters-lbl {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    }
+    .divider-v { width: 1px; height: 20px; background: var(--line); }
+    .filter-group { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+    .filter-group-lbl { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
+    .pill {
+      font-size: 0.75rem; font-weight: 500;
+      padding: 5px 14px; border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface); color: var(--ink-soft);
+      cursor: pointer; transition: all 0.18s;
+    }
+    .pill:hover, .pill.active {
+      background: var(--orange); color: var(--white); border-color: var(--orange);
+    }
+
+    .select-wrap { position: relative; display: inline-flex; align-items: center; }
+    .select-icon-left {
+      position: absolute; left: 10px; pointer-events: none;
+      color: var(--muted); display: flex; z-index: 1;
+    }
+    .filter-select {
+      font-family: var(--font-body);
+      font-size: 0.78rem; font-weight: 500;
+      padding: 7px 32px 7px 30px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface); color: var(--ink-soft);
+      -webkit-appearance: none; appearance: none;
+      outline: none; cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .filter-select:focus { border-color: var(--orange); }
+    .select-caret {
+      position: absolute; right: 10px; pointer-events: none; color: var(--muted);
+    }
+    .btn-clear {
+      margin-left: auto; display: flex; align-items: center; gap: 5px;
+      font-family: var(--font-body); font-size: 0.75rem; font-weight: 500;
+      color: var(--muted); background: none; border: none;
+      cursor: pointer; transition: color 0.2s;
+    }
+    .btn-clear:hover { color: var(--orange); }
+
+    /* ══════════ META ROW ══════════ */
+    .results-meta {
+      padding: 0 clamp(16px,5vw,40px) 16px;
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .results-count { font-size: 0.875rem; color: var(--muted); }
+    .results-count strong { color: var(--ink); font-weight: 600; }
+    .sort-wrap { position: relative; }
+    .sort-select {
+      font-family: var(--font-body); font-size: 0.78rem; font-weight: 500;
+      padding: 7px 32px 7px 12px;
+      border: 1px solid var(--line); border-radius: var(--radius-sm);
+      background: var(--white); color: var(--ink-soft);
+      -webkit-appearance: none; appearance: none;
+      outline: none; cursor: pointer; box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s;
+    }
+    .sort-select:focus { border-color: var(--orange); }
+    .sort-caret {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; color: var(--muted);
+    }
+
+    /* ══════════ GRID ══════════ */
+    .grid-section {
+      padding: 0 clamp(16px,5vw,40px) clamp(40px,8vw,72px);
+      max-width: 1200px; margin: 0 auto;
+    }
+    .influencers-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 22px;
+    }
+
+    /* ══════════ CARD ══════════ */
+    .inf-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden; display: flex; flex-direction: column;
+      transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.28s ease, border-color 0.2s;
+    }
+    .inf-card:hover {
+      transform: translateY(-7px) scale(1.014);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--orange-mid);
+    }
+
+    .card-cover {
+      height: 78px; position: relative;
+    }
+    .card-cover.food    { background: linear-gradient(135deg,#fff7ed,#fed7aa); }
+    .card-cover.fashion { background: linear-gradient(135deg,#fdf4ff,#e9d5ff); }
+    .card-cover.tech    { background: linear-gradient(135deg,#eff6ff,#bfdbfe); }
+    .card-cover.fitness { background: linear-gradient(135deg,#f0fdf4,#bbf7d0); }
+    .card-cover.travel  { background: linear-gradient(135deg,#fffbeb,#fde68a); }
+    .card-cover.beauty  { background: linear-gradient(135deg,#fff1f2,#fecdd3); }
+
+    .avatar-ring {
+      position: absolute; bottom: -28px; left: 18px;
+      background: linear-gradient(135deg,#fb923c,#ea580c);
+      padding: 2.5px; border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(249,115,22,0.25);
+    }
+    .avatar-ring img {
+      width: 58px; height: 58px; border-radius: 50%;
+      border: 2.5px solid var(--white);
+      display: block; object-fit: cover; background: #f0ece8;
+    }
+    .card-rating {
+      position: absolute; top: 10px; right: 12px;
+      font-size: 0.68rem; font-weight: 600;
+      padding: 3px 9px; border-radius: 999px;
+      background: rgba(255,255,255,0.85); backdrop-filter: blur(6px);
+      border: 1px solid rgba(249,115,22,0.2); color: var(--orange-dark);
+    }
+
+    .card-body {
+      padding: 38px 18px 18px;
+      display: flex; flex-direction: column; flex: 1;
+    }
+    .card-top-row {
+      display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;
+    }
+    .card-name {
+      font-family: var(--font-display);
+      font-size: 1rem; font-weight: 700;
+      color: var(--ink); line-height: 1.2; margin-bottom: 5px;
+    }
+    .niche-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 600;
+      padding: 2px 9px; border-radius: 999px;
+    }
+    .niche-food    { background:#fff7ed; color:#ea580c; }
+    .niche-fashion { background:#fdf4ff; color:#a21caf; }
+    .niche-tech    { background:#eff6ff; color:#1d4ed8; }
+    .niche-fitness { background:#f0fdf4; color:#15803d; }
+    .niche-travel  { background:#fffbeb; color:#b45309; }
+    .niche-beauty  { background:#fff1f2; color:#be185d; }
+
+    .price-wrap { text-align: right; }
+    .price-label { font-size: 0.68rem; color: var(--muted); line-height: 1; }
+    .price-val {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+      color: var(--orange); line-height: 1.2;
+    }
+
+    .card-meta {
+      display: flex; gap: 14px; margin-bottom: 10px;
+    }
+    .meta-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.76rem; color: var(--muted);
+    }
+    .meta-item svg { flex-shrink: 0; }
+
+    .card-bio {
+      font-size: 0.78rem; color: #a09d99; line-height: 1.55;
+      margin-bottom: 14px; flex: 1;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-actions { display: flex; gap: 8px; margin-top: auto; }
+    .btn-view {
+      flex: 1; text-align: center;
+      font-family: var(--font-display); font-size: 0.78rem; font-weight: 600;
+      padding: 9px 12px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--line);
+      color: var(--ink-soft); background: none;
+      cursor: pointer; text-decoration: none;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-view:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-book {
+      flex: 1; text-align: center;
+      font-family: var(--font-display); font-size: 0.78rem; font-weight: 600;
+      padding: 9px 12px; border-radius: var(--radius-sm);
+      border: none;
+      background: linear-gradient(135deg,#fb923c,#ea580c);
+      color: var(--white); cursor: pointer;
+      box-shadow: 0 3px 12px rgba(249,115,22,0.28);
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .btn-book:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249,115,22,0.42); }
+
+    /* ══════════ LOAD MORE ══════════ */
+    .load-more-wrap { text-align: center; padding-top: 32px; }
+    .btn-load-more {
+      font-family: var(--font-display); font-size: 0.875rem; font-weight: 600;
+      padding: 12px 32px; border-radius: 999px;
+      border: 2px solid var(--orange-mid);
+      color: var(--orange); background: var(--orange-light);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-load-more:hover {
+      background: var(--orange); color: var(--white); border-color: var(--orange);
+      box-shadow: 0 8px 22px rgba(249,115,22,0.35); transform: translateY(-2px);
+    }
+
+    /* ══════════ EMPTY STATE ══════════ */
+    .empty-state {
+      display: none; max-width: 420px; margin: 0 auto;
+      padding: clamp(40px,8vw,80px) 20px; text-align: center;
+    }
+    .empty-icon {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--orange-light);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .empty-state h3 {
+      font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 8px;
+    }
+    .empty-state p { font-size: 0.875rem; color: var(--muted); margin-bottom: 22px; }
+    .btn-browse {
+      font-family: var(--font-display); font-size: 0.875rem; font-weight: 600;
+      padding: 11px 28px; border-radius: 999px;
+      background: linear-gradient(135deg,#fb923c,#ea580c);
+      color: var(--white); border: none; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(249,115,22,0.3);
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .btn-browse:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(249,115,22,0.42); }
+
+    /* ══════════ CTA BAND ══════════ */
+    .cta-band {
+      background: linear-gradient(135deg,#f97316,#ea580c);
+      padding: clamp(48px,8vw,72px) clamp(16px,5vw,40px);
+      text-align: center;
+    }
+    .cta-eyebrow {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.75); margin-bottom: 12px;
+    }
+    .cta-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem,4vw,2.8rem);
+      font-weight: 800; color: var(--white);
+      line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 12px;
+    }
+    .cta-sub {
+      font-size: 0.95rem; color: rgba(255,255,255,0.82);
+      max-width: 500px; margin: 0 auto 28px;
+    }
+    .btn-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-display); font-size: 0.9rem; font-weight: 700;
+      background: var(--white); color: var(--orange-dark);
+      padding: 13px 32px; border-radius: 999px; text-decoration: none;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(0,0,0,0.2); }
+
+    /* ══════════ FOOTER ══════════ */
+    .footer {
+      background: #1a1714;
+      padding: clamp(28px,5vw,44px) clamp(16px,5vw,40px);
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .footer-logo-mark {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg,#fb923c,#ea580c);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.3);
+    }
+    .footer-logo-text {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 700; letter-spacing: -0.02em;
+    }
+    .footer-logo-text .dark  { color: var(--white); }
+    .footer-logo-text .accent { color: #fb923c; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 20px; list-style: none; }
+    .footer-links a {
+      font-size: 0.78rem; font-weight: 500;
+      color: #a09d99; text-decoration: none; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { font-size: 0.75rem; color: #6b6765; }
+
+    /* ══════════ RESPONSIVE ══════════ */
+    @media (max-width: 1024px) {
+      .influencers-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 720px) {
+      .nav-links, .btn-nav { display: none; }
+      .hamburger { display: flex; }
+      .influencers-grid { grid-template-columns: 1fr; }
+      .filters-bar { flex-direction: column; align-items: flex-start; }
+      .divider-v { display: none; }
+      .btn-clear { margin-left: 0; }
+      .search-box { flex-direction: column; }
+      .search-icon { display: none; }
+      .search-input { width: 100%; }
+      .btn-search { width: 100%; justify-content: center; }
+      .results-meta { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+    @media (max-width: 420px) {
+      .hero-title { font-size: 1.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ NAVBAR ═══════════ -->
+<header>
+  <nav class="navbar anim-nav">
+    <div class="navbar-inner">
+      <a href="#" class="logo">
+        <div class="logo-mark">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M8.5 11.5a3.5 3.5 0 005 0l2-2a3.536 3.536 0 00-5-5L9.4 5.6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11.5 8.5a3.5 3.5 0 00-5 0l-2 2a3.536 3.536 0 005 5l1.1-1.1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="logo-text"><span class="dark">Influ</span><span class="accent">Connect</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#" class="active">Explore Influencers</a></li>
+        <li><a href="#">How it Works</a></li>
+        <li><a href="#">Login</a></li>
+      </ul>
+      <a href="#" class="btn-nav">Get Started</a>
+      <button class="hamburger" onclick="document.getElementById('mob-menu').classList.toggle('open')" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div id="mob-menu" class="mobile-menu">
+    <a href="#">Home</a>
+    <a href="#" class="active">Explore Influencers</a>
+    <a href="#">How it Works</a>
+    <a href="#">Login</a>
+    <a href="#" class="btn-nav">Get Started</a>
+  </div>
+</header>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="hero-inner">
+    <div class="hero-badge anim-1"><span class="live-dot"></span>1,200+ creators available now</div>
+    <h1 class="hero-title anim-2">Find Influencers<br/><span class="hl">Near You</span></h1>
+    <p class="hero-sub anim-3">Search and connect with local creators to promote your business authentically.</p>
+  </div>
+</section>
+
+<!-- ═══════════ SEARCH ═══════════ -->
+<div class="search-section anim-4">
+  <div class="search-box">
+    <div class="search-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    </div>
+    <input type="text" class="search-input" placeholder="Enter your city (e.g. Delhi, Mumbai, Bangalore…)" />
+    <button class="btn-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Search
+    </button>
+  </div>
+  <div class="quick-tags">
+    <span class="quick-label">Popular:</span>
+    <button class="quick-tag" onclick="toggleTag(this)">Delhi</button>
+    <button class="quick-tag" onclick="toggleTag(this)">Mumbai</button>
+    <button class="quick-tag" onclick="toggleTag(this)">Bangalore</button>
+    <button class="quick-tag" onclick="toggleTag(this)">Hyderabad</button>
+    <button class="quick-tag" onclick="toggleTag(this)">Pune</button>
+    <button class="quick-tag" onclick="toggleTag(this)">Chennai</button>
+  </div>
+</div>
+
+<!-- ═══════════ FILTERS ═══════════ -->
+<div class="filters-section anim-5">
+  <div class="filters-bar">
+    <span class="filters-lbl">Filters</span>
+    <div class="divider-v"></div>
+    <div class="filter-group">
+      <span class="filter-group-lbl">Category:</span>
+      <button class="pill" onclick="this.classList.toggle('active')">🍕 Food</button>
+      <button class="pill" onclick="this.classList.toggle('active')">👗 Fashion</button>
+      <button class="pill" onclick="this.classList.toggle('active')">💻 Tech</button>
+      <button class="pill" onclick="this.classList.toggle('active')">🏋️ Fitness</button>
+      <button class="pill" onclick="this.classList.toggle('active')">✈️ Travel</button>
+    </div>
+    <div class="divider-v"></div>
+    <div class="select-wrap">
+      <span class="select-icon-left">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </span>
+      <select class="filter-select">
+        <option value="">Followers</option>
+        <option>1K – 10K</option><option>10K – 50K</option>
+        <option>50K – 200K</option><option>200K+</option>
+      </select>
+      <svg class="select-caret" width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="select-wrap">
+      <span class="select-icon-left">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      </span>
+      <select class="filter-select">
+        <option value="">Price / post</option>
+        <option>Under ₹500</option><option>₹500 – ₹2,000</option>
+        <option>₹2,000 – ₹10,000</option><option>₹10,000+</option>
+      </select>
+      <svg class="select-caret" width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <button class="btn-clear" onclick="clearFilters()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Clear all
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ RESULTS META ═══════════ -->
+<div class="results-meta anim-6">
+  <p class="results-count">Showing <strong>6</strong> influencers</p>
+  <div class="sort-wrap">
+    <select class="sort-select">
+      <option>Sort: Most Popular</option>
+      <option>Price: Low to High</option>
+      <option>Price: High to Low</option>
+      <option>Followers: High to Low</option>
+    </select>
+    <svg class="sort-caret" width="12" height="12" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</div>
+
+<!-- ═══════════ INFLUENCERS GRID ═══════════ -->
+<section class="grid-section anim-6">
+  <div class="influencers-grid">
+
+    <!-- Card 1 -->
+    <div class="inf-card">
+      <div class="card-cover food">
+        <div class="avatar-ring"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Priya&backgroundColor=b6e3f4" alt="Priya Sharma"/></div>
+        <span class="card-rating">⭐ 4.9</span>
+      </div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div>
+            <div class="card-name">Priya Sharma</div>
+            <span class="niche-badge niche-food">🍕 Food</span>
+          </div>
+          <div class="price-wrap"><div class="price-label">per post</div><div class="price-val">₹1,500</div></div>
+        </div>
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+            42.5K followers
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Delhi
+          </span>
+        </div>
+        <p class="card-bio">Food blogger & café explorer. Specialises in honest restaurant reviews and recipe reels.</p>
+        <div class="card-actions">
+          <a href="/profile/">View Profile</a>
+          <a href="/book/" class="btn btn-primary">Book Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="inf-card">
+      <div class="card-cover fashion">
+        <div class="avatar-ring"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aisha&backgroundColor=ffdfbf" alt="Aisha Khan"/></div>
+        <span class="card-rating">⭐ 4.8</span>
+      </div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div>
+            <div class="card-name">Aisha Khan</div>
+            <span class="niche-badge niche-fashion">👗 Fashion</span>
+          </div>
+          <div class="price-wrap"><div class="price-label">per post</div><div class="price-val">₹3,200</div></div>
+        </div>
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+            128K followers
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Mumbai
+          </span>
+        </div>
+        <p class="card-bio">Streetwear & ethnic fusion content creator. Collaborates with boutiques and D2C clothing brands.</p>
+        <div class="card-actions">
+          <a href="/profile/">View Profile</a>
+          <a href="/book/" class="btn btn-primary">Book Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="inf-card">
+      <div class="card-cover tech">
+        <div class="avatar-ring"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul&backgroundColor=c0aede" alt="Rahul Verma"/></div>
+        <span class="card-rating">⭐ 4.7</span>
+      </div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div>
+            <div class="card-name">Rahul Verma</div>
+            <span class="niche-badge niche-tech">💻 Tech</span>
+          </div>
+          <div class="price-wrap"><div class="price-label">per post</div><div class="price-val">₹5,000</div></div>
+        </div>
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+            215K followers
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Bangalore
+          </span>
+        </div>
+        <p class="card-bio">Gadget reviewer & startup enthusiast. Known for in-depth unboxings and software tutorials.</p>
+        <div class="card-actions">
+          <a href="/profile/">View Profile</a>
+          <a href="/book/" class="btn btn-primary">Book Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="inf-card">
+      <div class="card-cover fitness">
+        <div class="avatar-ring"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha&backgroundColor=d1d4f9" alt="Sneha Patel"/></div>
+        <span class="card-rating">⭐ 4.9</span>
+      </div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div>
+            <div class="card-name">Sneha Patel</div>
+            <span class="niche-badge niche-fitness">🏋️ Fitness</span>
+          </div>
+          <div class="price-wrap"><div class="price-label">per post</div><div class="price-val">₹2,800</div></div>
+        </div>
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+            89K followers
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Pune
+          </span>
+        </div>
+        <p class="card-bio">Certified nutritionist & home workout coach. Promotes healthy lifestyle brands and gym equipment.</p>
+        <div class="card-actions">
+          <a href="/profile/">View Profile</a>
+          <a href="/book/" class="btn btn-primary">Book Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="inf-card">
+      <div class="card-cover travel">
+        <div class="avatar-ring"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun&backgroundColor=ffd5dc" alt="Arjun Mehta"/></div>
+        <span class="card-rating">⭐ 4.6</span>
+      </div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div>
+            <div class="card-name">Arjun Mehta</div>
+            <span class="niche-badge niche-travel">✈️ Travel</span>
+          </div>
+          <div class="price-wrap"><div class="price-label">per post</div><div class="price-val">₹4,500</div></div>
+        </div>
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+            163K followers
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Hyderabad
+          </span>
+        </div>
+        <p class="card-bio">Weekend wanderer documenting hidden gems across India. Partners with hotels, cafés & local tours.</p>
+        <div class="card-actions">
+          <a href="/profile/">View Profile</a>
+          <a href="/book/" class="btn btn-primary">Book Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="inf-card">
+      <div class="card-cover beauty">
+        <div class="avatar-ring"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Kavya&backgroundColor=b6e3f4" alt="Kavya Nair"/></div>
+        <span class="card-rating">⭐ 5.0</span>
+      </div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div>
+            <div class="card-name">Kavya Nair</div>
+            <span class="niche-badge niche-beauty">💄 Beauty</span>
+          </div>
+          <div class="price-wrap"><div class="price-label">per post</div><div class="price-val">₹2,200</div></div>
+        </div>
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+            74K followers
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Chennai
+          </span>
+        </div>
+        <p class="card-bio">Skincare & makeup artist focused on Indian skin tones. Trusted by homegrown beauty brands.</p>
+        <div class="card-actions">
+          <a href="/profile/">View Profile</a>
+          <a href="/book/" class="btn btn-primary">Book Now</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="load-more-wrap">
+    <button class="btn-load-more">Load More Influencers →</button>
+  </div>
+</section>
+
+<!-- ═══════════ EMPTY STATE ═══════════ -->
+<div class="empty-state" id="empty-state">
+  <div class="empty-icon">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+  </div>
+  <h3>No influencers found in your area</h3>
+  <p>We're expanding fast. Try a nearby city or broaden your filters to find the right match.</p>
+  <button class="btn-browse">Browse All Cities</button>
+</div>
+
+<!-- ═══════════ CTA BAND ═══════════ -->
+<section class="cta-band">
+  <p class="cta-eyebrow">For Influencers</p>
+  <h2 class="cta-title">Are you a local creator?<br/>Start earning today.</h2>
+  <p class="cta-sub">Join InfluConnect as an influencer and get discovered by shopkeepers near you. Free to sign up.</p>
+  <a href="#" class="btn-cta">
+    Join as Influencer
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <a href="#" class="footer-logo">
+      <div class="footer-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M8.5 11.5a3.5 3.5 0 005 0l2-2a3.536 3.536 0 00-5-5L9.4 5.6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M11.5 8.5a3.5 3.5 0 00-5 0l-2 2a3.536 3.536 0 005 5l1.1-1.1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="footer-logo-text"><span class="dark">Influ</span><span class="accent">Connect</span></span>
+    </a>
+    <ul class="footer-links">
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+      <li><a href="#">Help Center</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+    <p class="footer-copy">© 2025 InfluConnect. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  function toggleTag(el) {
+    document.querySelectorAll('.quick-tag').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function clearFilters() {
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+  }
+</script>
+
+</body>
+</html>
